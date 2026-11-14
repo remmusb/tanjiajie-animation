@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>叹家姐 · 动画小片</title>
+<style>
+/* ===== tokens: 深海墨青 + 渔火琥珀 + 老照片纸白 ===== */
+:root{
+  --ink: oklch(0.15 0.03 235);
+  --ink-2: oklch(0.22 0.045 230);
+  --sea: oklch(0.30 0.06 225);
+  --sea-2: oklch(0.40 0.07 220);
+  --amber: oklch(0.78 0.13 80);
+  --amber-2: oklch(0.65 0.14 60);
+  --paper: oklch(0.93 0.02 90);
+  --paper-dim: oklch(0.80 0.02 90);
+  --red: oklch(0.52 0.17 30);
+  --gold: oklch(0.82 0.12 95);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font:16px/1.65 "Songti SC","STSong","SimSun","Noto Serif CJK SC",serif;
+  background:oklch(0.10 0.02 235);
+  color:var(--paper);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  -webkit-font-smoothing:antialiased;
+  padding:12px;min-height:100dvh;
+}
+button{cursor:pointer;font-family:inherit}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+#app{width:100%;max-width:1120px}
+
+/* ===== 舞台 ===== */
+.stage{
+  position:relative;width:100%;aspect-ratio:16/9;max-height:78dvh;margin:0 auto;
+  overflow:hidden;border-radius:6px;
+  background:linear-gradient(180deg,var(--ink) 0%,var(--ink-2) 55%,var(--sea) 100%);
+  box-shadow:0 24px 80px oklch(0.05 0.02 235 / .8);
+}
+.grain{position:absolute;inset:0;z-index:40;pointer-events:none;opacity:.07;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");}
+.vignette{position:absolute;inset:0;z-index:41;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 45%, transparent 55%, oklch(0.05 0.02 235 / .55) 100%);}
+.letterbox{position:absolute;left:0;right:0;height:5.5%;background:#000;z-index:42}
+.letterbox.top{top:0}.letterbox.bottom{bottom:0}
+
+/* ===== 场景通用 ===== */
+.scene{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity 1.2s ease,visibility 1.2s;z-index:1}
+.scene.active{opacity:1;visibility:visible;z-index:2}
+.sky{position:absolute;inset:0}
+.horizon-sea{position:absolute;left:-10%;right:-10%;bottom:0;height:38%;
+  background:linear-gradient(180deg,var(--sea-2),var(--sea) 40%,var(--ink-2));}
+.wave{position:absolute;left:0;bottom:0;width:200%;height:100%;background-repeat:repeat-x;background-size:50% 100%}
+.w1{opacity:.5;animation:drift 14s linear infinite;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 60' preserveAspectRatio='none'%3E%3Cpath d='M0 30 Q50 10 100 30 T200 30 T300 30 T400 30 V60 H0 Z' fill='%233d6a8a' fill-opacity='0.55'/%3E%3C/svg%3E");}
+.w2{opacity:.7;bottom:-6%;animation:drift 9s linear infinite reverse;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 60' preserveAspectRatio='none'%3E%3Cpath d='M0 32 Q50 14 100 32 T200 32 T300 32 T400 32 V60 H0 Z' fill='%23233f57' fill-opacity='0.8'/%3E%3C/svg%3E");}
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+.moon{position:absolute;top:12%;right:16%;width:9%;aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle at 40% 40%, var(--paper), var(--paper-dim) 70%);
+  box-shadow:0 0 60px 18px oklch(0.9 0.03 95 / .25);}
+.sun{position:absolute;top:14%;right:20%;width:11%;aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle at 42% 42%, oklch(0.95 0.08 95), oklch(0.8 0.13 75) 70%);
+  box-shadow:0 0 80px 30px oklch(0.85 0.12 85 / .3);}
+.lantern{position:absolute;width:2.2%;aspect-ratio:.7;border-radius:40%;
+  background:radial-gradient(circle,var(--amber),var(--amber-2));
+  box-shadow:0 0 26px 8px oklch(0.75 0.13 80 / .5);animation:flicker 2.6s ease-in-out infinite;}
+@keyframes flicker{0%,100%{opacity:.95}45%{opacity:.65}70%{opacity:.9}}
+
+/* ===== 疍家船（精细版：船板 / 篷肋 / 翘尾 / 桅杆 / 船窗暖光） ===== */
+.boat{position:absolute;bottom:16%;width:26%;animation:rock 5.5s ease-in-out infinite;transform-origin:50% 92%;z-index:8}
+.boat svg{width:100%;display:block;overflow:visible}
+@keyframes rock{0%,100%{transform:rotate(-2.4deg) translateY(0)}50%{transform:rotate(2.2deg) translateY(-3%)}}
+.hull{fill:#0e1826}
+.hull-line{stroke:#2c405a;stroke-width:1.6;fill:none;opacity:.85}
+.rib{stroke:#3a5474;stroke-width:2;fill:none;opacity:.85}
+.cabin{fill:#141f30}
+.cabin-roof{fill:#0b1320}
+.mast{fill:#0b1320}
+.boatlight{fill:var(--amber)}
+.cabinglow{fill:oklch(0.85 0.1 85 / .9)}
+.bname{font-family:"Kaiti SC","STKaiti","KaiTi",serif;font-size:11px;fill:oklch(0.85 0.04 90);letter-spacing:2px}
+.rname{font-family:"Kaiti SC","STKaiti","KaiTi",serif;font-size:10px;fill:oklch(0.92 0.03 90);letter-spacing:1px}
+.flagred{fill:var(--red)}
+
+/* ===== 人形剪影 ===== */
+.fig{position:absolute;z-index:9}
+.fig svg{width:100%;display:block;overflow:visible}
+.sk-girl{fill:#0c1522}      /* 小淑珍：双辫 */
+.sk-boy{fill:#0e1826}
+.sk-woman{fill:#101a29}     /* 月娥 */
+.sk-man{fill:#0d1420}       /* 邓公 */
+.sk-runner{fill:#0c1522}    /* 淑仪奔跑 */
+.sk-old{fill:#121c2b}       /* 外婆（拄杖） */
+.sk-wuyue{fill:#0c1522}     /* 武岳 */
+.sk-child{fill:#0e1826}
+.fig .rim{filter:drop-shadow(0 0 5px oklch(0.78 0.13 80 / .45))}
+.fig .rim-cold{filter:drop-shadow(0 0 6px oklch(0.8 0.05 230 / .5))}
+
+/* 雨 / 闪电 */
+.rain{position:absolute;inset:-20%;z-index:6;pointer-events:none;opacity:.5;
+  background:repeating-linear-gradient(115deg, transparent 0 9px, oklch(0.85 0.03 230 / .35) 9px 10px);
+  background-size:140px 140px;animation:rainMove .55s linear infinite;}
+@keyframes rainMove{from{background-position:0 0}to{background-position:-70px 140px}}
+.flash{position:absolute;inset:0;background:oklch(0.95 0.02 230);opacity:0;z-index:7;pointer-events:none}
+.scene.active .flash.stormy{animation:flash 6s linear infinite}
+@keyframes flash{0%,100%{opacity:0}3%{opacity:.85}4.5%{opacity:.1}6%{opacity:.7}8%{opacity:0}54%{opacity:0}55.5%{opacity:.6}57%{opacity:0}}
+
+/* 章节卡 */
+.cc{position:absolute;left:6%;top:16%;z-index:20;opacity:0;pointer-events:none}
+.scene.active .cc{animation:ccIn 4.4s ease forwards}
+.cc .no{font-size:clamp(11px,1.3vw,14px);letter-spacing:.45em;color:var(--amber);margin-bottom:.5em}
+.cc .t{font-size:clamp(22px,3.6vw,44px);font-family:"Kaiti SC","STKaiti","KaiTi",serif;letter-spacing:.12em;color:var(--paper)}
+.cc .t::after{content:"";display:block;width:2.2em;height:1px;background:var(--amber);margin-top:.5em;opacity:.7}
+@keyframes ccIn{0%{opacity:0;transform:translateY(14px)}10%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
+
+/* 字幕 */
+#subtitle{position:absolute;left:50%;bottom:9%;transform:translateX(-50%);z-index:45;
+  width:min(88%,72ch);text-align:center;pointer-events:none;
+  font-size:clamp(15px,2vw,24px);line-height:1.8;letter-spacing:.06em;
+  color:var(--paper);text-shadow:0 2px 14px #000,0 0 4px #000;
+  opacity:0;transition:opacity .5s ease;}
+#subtitle.show{opacity:1}
+#subtitle .verse{font-family:"Kaiti SC","STKaiti","KaiTi",serif;color:var(--gold)}
+#subtitle .verse i{display:inline-block;font-style:normal;opacity:0;animation:charIn .55s ease forwards}
+@keyframes charIn{from{opacity:0;transform:translateY(.35em);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+
+/* 星星 / 月路 */
+.stars{position:absolute;inset:0 0 40% 0;
+  background-image:radial-gradient(1.5px 1.5px at 12% 22%,var(--paper),transparent),radial-gradient(1px 1px at 28% 12%,var(--paper-dim),transparent),radial-gradient(1.5px 1.5px at 45% 30%,var(--paper),transparent),radial-gradient(1px 1px at 62% 10%,var(--paper),transparent),radial-gradient(1.2px 1.2px at 76% 24%,var(--paper-dim),transparent),radial-gradient(1px 1px at 88% 8%,var(--paper),transparent),radial-gradient(1.3px 1.3px at 35% 42%,var(--paper-dim),transparent),radial-gradient(1px 1px at 55% 18%,var(--paper),transparent);
+  animation:twinkle 4s ease-in-out infinite alternate}
+@keyframes twinkle{from{opacity:.5}to{opacity:1}}
+.moonpath{position:absolute;right:10%;top:24%;width:16%;height:52%;transform:skewX(-8deg);
+  background:linear-gradient(180deg,oklch(0.93 0.02 90/.16),transparent);filter:blur(6px)}
+
+/* ===== 1 片头 ===== */
+#sc-title .sky{background:linear-gradient(180deg,oklch(0.12 0.03 235),oklch(0.2 0.04 230) 60%,var(--sea))}
+#sc-title .boat{bottom:14%;left:37%;width:26%;animation:rock 7s ease-in-out infinite}
+.bigtitle{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4em;z-index:15}
+.bigtitle h1{font-family:"Kaiti SC","STKaiti","KaiTi",serif;font-size:clamp(40px,8vw,96px);letter-spacing:.28em;text-indent:.28em;color:var(--paper);text-shadow:0 4px 40px oklch(0.6 0.1 220 / .6);opacity:0}
+.bigtitle p{font-size:clamp(12px,1.5vw,17px);letter-spacing:.5em;text-indent:.5em;color:var(--paper-dim);opacity:0}
+.scene.active .bigtitle h1{animation:fadeUp 3s .8s ease forwards}
+.scene.active .bigtitle p{animation:fadeUp 3s 2s ease forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* ===== 2 巴黎（现代） ===== */
+#sc-paris .sky{background:linear-gradient(180deg,oklch(0.13 0.02 260),oklch(0.18 0.03 250))}
+.eiffel{position:absolute;left:15%;bottom:26%;width:12%;opacity:.5}
+.window{position:absolute;left:8%;top:10%;width:34%;height:60%;border:3px solid oklch(0.35 0.03 250);border-radius:4px;overflow:hidden;
+  background:linear-gradient(180deg,oklch(0.22 0.05 250),oklch(0.32 0.06 240));}
+.window::before{content:"";position:absolute;inset:0;z-index:3;
+  background:repeating-linear-gradient(100deg, transparent 0 14px, oklch(0.85 0.05 230/.25) 14px 15px);
+  background-size:120px 120px;animation:rainMove .7s linear infinite;}
+.window .citylight{position:absolute;bottom:18%;left:20%;width:8%;height:8%;border-radius:50%;background:var(--amber);box-shadow:0 0 20px 8px oklch(0.75 0.13 80/.4);filter:blur(1px)}
+.window .citylight:nth-child(3){left:60%;bottom:30%;width:6%;height:6%}
+.counter{position:absolute;right:6%;bottom:0;width:46%;height:32%;background:linear-gradient(180deg,oklch(0.32 0.04 80),oklch(0.2 0.03 70));border-top:2px solid oklch(0.58 0.09 80)}
+.lampglow{position:absolute;right:16%;top:6%;width:16%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,oklch(0.8 0.12 90/.5),transparent 70%)}
+.sketchbook{position:absolute;right:20%;bottom:30%;width:11%;aspect-ratio:1.35;background:var(--paper);border-radius:2px;transform:rotate(-6deg);z-index:8;
+  box-shadow:0 4px 14px oklch(0 0 0/.4)}
+.sketchbook::before{content:"";position:absolute;left:0;top:0;bottom:0;width:49%;border-right:1px solid oklch(0.6 0.03 90);
+  background:repeating-linear-gradient(12deg,transparent 0 9px,oklch(0.55 0.05 80/.4) 9px 10px)}
+.phone{position:absolute;right:35%;bottom:28%;width:5.5%;aspect-ratio:.5;border-radius:12%;background:oklch(0.2 0.02 260);border:1px solid oklch(0.5 0.03 260);z-index:9}
+.phone::after{content:"";position:absolute;inset:12% 14%;border-radius:8%;background:linear-gradient(180deg,oklch(0.75 0.1 200),oklch(0.5 0.1 220))}
+.scene.active .phone{animation:ring 1.1s ease-in-out infinite}
+@keyframes ring{0%,100%{transform:rotate(0)}8%{transform:rotate(-6deg)}16%{transform:rotate(6deg)}24%{transform:rotate(-5deg)}32%{transform:rotate(4deg)}40%{transform:rotate(0)}}
+.phoneglow{position:absolute;right:32%;bottom:22%;width:12%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,oklch(0.8 0.12 200/.5),transparent 70%);animation:flicker 1.1s infinite;z-index:8}
+
+/* ===== 3 1944 空袭送信 ===== */
+#sc-raid .sky{background:linear-gradient(180deg,oklch(0.22 0.07 25),oklch(0.15 0.05 28) 50%,oklch(0.1 0.03 240))}
+.beam{position:absolute;bottom:26%;width:3%;height:72%;transform-origin:50% 100%;
+  background:linear-gradient(0deg,oklch(0.9 0.03 95/.55),transparent 85%);filter:blur(3px);z-index:2}
+.beam.b1{left:14%;animation:sweep 7s ease-in-out infinite alternate}
+.beam.b2{left:70%;animation:sweep 9s ease-in-out infinite alternate-reverse}
+@keyframes sweep{from{transform:rotate(-24deg)}to{transform:rotate(20deg)}}
+.siren{position:absolute;left:6%;top:10%;font-size:clamp(10px,1.2vw,13px);letter-spacing:.4em;color:oklch(0.72 0.16 32);z-index:10}
+.qilou{position:absolute;left:0;right:0;bottom:0;height:34%;z-index:3}
+.qilou .bld{position:absolute;bottom:0;background:oklch(0.1 0.025 25)}
+.qilou .bld::before{content:"";position:absolute;left:8%;right:8%;top:-8%;height:8%;background:inherit;border-radius:40% 40% 0 0}
+.qilou .bld i{position:absolute;bottom:12%;width:9%;height:26%;background:oklch(0.75 0.08 70/.28);box-shadow:0 0 8px 2px oklch(0.75 0.1 75/.2)}
+.qilou .bld i:nth-child(1){left:12%}.qilou .bld i:nth-child(2){left:30%}.qilou .bld i:nth-child(3){left:48%}.qilou .bld i:nth-child(4){left:66%}.qilou .bld i:nth-child(5){left:82%}
+.tree{position:absolute;left:42%;bottom:16%;width:22%;height:56%;z-index:5}
+.fig-raidgirl{left:53.5%;bottom:47%;width:4.2%;z-index:6}
+.scene.active .fig-raidgirl{animation:girlDown 5s 4s ease forwards}
+@keyframes girlDown{0%{transform:translateY(0)}60%{transform:translateY(14vh) rotate(6deg)}100%{transform:translateY(16vh) rotate(0)}}
+.fig-raidmom{left:38%;bottom:6%;width:5.4%}
+.fig-raidman{left:27%;bottom:6%;width:6.4%}
+
+/* ===== 4 1945 碑亭 ===== */
+#sc-stele .sky{background:linear-gradient(180deg,oklch(0.86 0.045 90),oklch(0.74 0.06 85) 55%,oklch(0.52 0.06 80))}
+#sc-stele .ground{position:absolute;left:0;right:0;bottom:0;height:26%;background:linear-gradient(180deg,oklch(0.46 0.05 80),oklch(0.38 0.045 75))}
+.bunting{position:absolute;left:0;right:0;top:9%;height:9%;z-index:4;opacity:.9;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 30' preserveAspectRatio='none'%3E%3Cpath d='M0 0 Q30 18 60 4 Q90 -6 120 6' stroke='%237a4a3a' stroke-width='1.5' fill='none'/%3E%3Cpath d='M14 7 L24 22 L32 9 Z' fill='%23a33c2e'/%3E%3Cpath d='M52 6 L62 21 L70 5' fill='%23b8892f'/%3E%3Cpath d='M90 4 L100 19 L108 3' fill='%23a33c2e'/%3E%3C/svg%3E");
+  background-size:24% 100%;background-repeat:repeat-x}
+.pavilion{position:absolute;left:36%;bottom:22%;width:26%;z-index:3}
+.pv-roof{fill:#43382a}.pv-col{fill:#3a2f22}.pv-stele{fill:#5c4d38}.pv-text{fill:#2c241a;font-size:11px}
+.photo-frame{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%) rotate(-2deg);
+  width:44%;aspect-ratio:4/3;background:var(--paper);padding:2%;padding-bottom:6%;
+  box-shadow:0 18px 50px oklch(0.1 0.02 60/.5);z-index:10;opacity:0}
+.scene.active .photo-frame{animation:photoIn 3s 1.2s ease forwards}
+@keyframes photoIn{from{opacity:0;transform:translate(-50%,-46%) rotate(-6deg) scale(1.15)}to{opacity:1;transform:translate(-50%,-50%) rotate(-2deg)}}
+.photo-inner{width:100%;height:100%;background:linear-gradient(180deg,oklch(0.82 0.035 85),oklch(0.62 0.045 80));position:relative;overflow:hidden;filter:sepia(.5) contrast(.95)}
+.ph-cap{position:absolute;left:0;right:0;bottom:1%;text-align:center;font-size:clamp(8px,1vw,12px);color:oklch(0.4 0.04 70);letter-spacing:.15em}
+.bulb{position:absolute;inset:0;background:#fff;opacity:0;z-index:11;pointer-events:none}
+.scene.active .bulb{animation:bulb 1s 2.6s ease forwards}
+@keyframes bulb{0%{opacity:0}15%{opacity:.95}100%{opacity:0}}
+.ph-man{fill:#3a3126}.ph-girl{fill:#46403a}
+
+/* ===== 5 淑仪（1950s） ===== */
+#sc-sister .sky{background:linear-gradient(180deg,oklch(0.14 0.03 240),oklch(0.1 0.025 240) 60%,oklch(0.16 0.03 235))}
+#sc-sister .moon{right:10%;top:8%}
+.banner-red{position:absolute;left:6%;top:12%;width:24%;padding:.5em .8em;background:oklch(0.5 0.16 28);z-index:4;
+  font-size:clamp(9px,1.1vw,13px);letter-spacing:.3em;color:oklch(0.92 0.03 90);transform:rotate(-2deg);box-shadow:0 4px 12px oklch(0 0 0/.4)}
+.shed{position:absolute;left:31%;top:14%;width:40%;height:64%;overflow:hidden;border-radius:2px;
+  background:repeating-linear-gradient(90deg, oklch(0.22 0.03 60) 0 7%, oklch(0.13 0.02 60) 7% 8.5%);
+  box-shadow:inset 0 0 80px #000, 0 10px 50px oklch(0 0 0/.6);z-index:5}
+.shed .crack{position:absolute;top:0;bottom:0;width:1.6%;background:oklch(0.88 0.11 85/.95);filter:blur(1.5px);box-shadow:0 0 18px 6px oklch(0.8 0.12 85/.45)}
+.shed .crack.c1{left:22%}.shed .crack.c2{left:55%}.shed .crack.c3{left:81%}
+.fig-runner{left:8%;bottom:14%;width:7%;z-index:6}
+.scene.active .fig-runner{animation:runBy 4s .5s ease-in forwards}
+@keyframes runBy{0%{transform:translateX(0);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateX(56vw);opacity:0}}
+.shedfig{left:46.5%;bottom:6%;width:5.5%;z-index:6}
+.shedfig svg{filter:drop-shadow(0 0 6px oklch(0.7 0.1 85 / .5))}
+.shedfig path,.shedfig circle{fill:#232b38}
+.candle{position:absolute;left:24%;bottom:8%;width:2.2%;aspect-ratio:.4;background:var(--paper-dim);z-index:6}
+.candle::before{content:"";position:absolute;left:15%;top:-38%;width:70%;aspect-ratio:.6;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+  background:radial-gradient(circle at 50% 80%,#fff,var(--amber) 55%,transparent 75%);
+  box-shadow:0 0 30px 10px oklch(0.78 0.13 80/.5);animation:flicker 1.6s infinite}
+.scene.active .candle{animation:candleOut 2.4s 16s ease forwards}
+@keyframes candleOut{to{opacity:0}}
+
+/* ===== 6 上船·淑仪号 ===== */
+#sc-boat .sky{background:linear-gradient(180deg,oklch(0.13 0.03 235),oklch(0.2 0.045 230) 55%,var(--sea))}
+#sc-boat .boat{left:32%;bottom:14%;width:42%}
+.pier{position:absolute;left:0;bottom:10%;width:20%;height:6%;background:oklch(0.14 0.03 60);z-index:7;
+  box-shadow:0 -3px 0 oklch(0.2 0.04 65)}
+.jewel{position:absolute;width:1.2%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,var(--gold));
+  box-shadow:0 0 12px 3px oklch(0.82 0.12 95/.6);opacity:0;z-index:9}
+.scene.active .jewel{animation:jewelDrop 3.2s ease forwards}
+.jewel.j1{left:14%;top:26%}.jewel.j2{left:19%;top:22%;animation-delay:.5s!important}.jewel.j3{left:23%;top:30%;animation-delay:1s!important}
+@keyframes jewelDrop{0%{opacity:0;transform:translateY(-10px)}15%{opacity:1}70%{opacity:1;transform:translateY(60px) scale(.9)}100%{opacity:0;transform:translateY(120px) scale(.7)}}
+.fig-moon6{left:8%;bottom:15%;width:5.6%;z-index:9}
+.fig-girl6{left:15%;bottom:15%;width:4%;z-index:9}
+.scene.active .fig-girl6{animation:boardBoat 5s 5.5s ease forwards}
+@keyframes boardBoat{to{transform:translateX(13vw) translateY(1vh)}}
+/* 宝螺小鲸鱼 */
+.whale{position:absolute;width:5%;z-index:13;opacity:0}
+.scene.active .whale{animation:whaleIn 3s 12s ease forwards}
+@keyframes whaleIn{from{opacity:0;transform:translateY(20px) rotate(-14deg)}to{opacity:1;transform:none}}
+#sc-boat .whale{left:52%;bottom:44%}
+.whale-sh{fill:#e8e0cd}.whale-eye{fill:#7a6c50}.whale-str{stroke:#a33;stroke-width:2;fill:none}
+
+/* ===== 7 台风夜 ===== */
+#sc-typhoon .sky{background:linear-gradient(180deg,oklch(0.1 0.03 240),oklch(0.14 0.05 235) 50%,oklch(0.2 0.06 230))}
+#sc-typhoon .horizon-sea{height:48%}
+#sc-typhoon .w1{animation-duration:4s;opacity:.8}
+#sc-typhoon .w2{animation-duration:2.8s;opacity:.9}
+#sc-typhoon .boat{left:38%;bottom:27%;width:24%;animation:stormRock 2.2s ease-in-out infinite}
+@keyframes stormRock{0%,100%{transform:rotate(-14deg) translateY(6%)}50%{transform:rotate(12deg) translateY(-14%)}}
+.rope{position:absolute;left:24%;bottom:34%;width:24%;height:2px;background:oklch(0.7 0.05 80/.7);transform:rotate(-11deg);transform-origin:0 50%;z-index:8}
+.rescue{position:absolute;left:10%;bottom:36%;width:13%;animation:stormRock 2.6s ease-in-out infinite reverse;z-index:8}
+.rescuer{position:absolute;left:14%;bottom:43%;width:4%;z-index:9;animation:stormRock 2.6s ease-in-out infinite reverse}
+.fish{position:absolute;width:2.4%;z-index:5;opacity:.85}
+.scene.active .fish{animation:fishJump 3.4s ease-in infinite}
+.fish.f1{left:52%;bottom:38%}.fish.f2{left:60%;bottom:34%;animation-delay:1.1s!important}.fish.f3{left:70%;bottom:40%;animation-delay:2.2s!important}
+@keyframes fishJump{0%{opacity:0;transform:translateY(2vh) rotate(20deg)}20%{opacity:1}50%{transform:translateY(-4vh) rotate(-30deg)}80%{opacity:1}100%{opacity:0;transform:translateY(3vh) rotate(-70deg)}}
+.fish svg{width:100%}
+.fishbody{fill:#8fb6c9}
+
+/* ===== 8 叹家姐（重做：双船剪影 + 歌者 + 水中月） ===== */
+#sc-song .sky{background:linear-gradient(180deg,oklch(0.12 0.035 235),oklch(0.18 0.05 230) 60%,oklch(0.26 0.06 225))}
+#sc-song .boat{left:36%;bottom:15%;width:24%;animation:rock 8s ease-in-out infinite}
+#sc-song .boat2{left:64%;bottom:22%;width:10%;animation:rock 9s ease-in-out infinite;opacity:.75}
+#sc-song .lantern{left:46%;bottom:26.5%}
+.fig-singer{left:44.5%;bottom:26%;width:4.6%;z-index:9}
+.fig-listener{left:52%;bottom:25.5%;width:3.6%;z-index:9}
+.scene.active .fig-singer svg{animation:singSway 5s ease-in-out infinite}
+@keyframes singSway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+.note{position:absolute;z-index:9;font-family:serif;color:var(--gold);opacity:0;text-shadow:0 0 10px oklch(0.82 0.12 95/.7)}
+.scene.active .note{animation:noteFloat 6s ease-in infinite}
+.note.n1{left:47%;bottom:40%;font-size:clamp(14px,2vw,24px)}
+.note.n2{left:50%;bottom:44%;font-size:clamp(11px,1.6vw,19px);animation-delay:2s!important}
+.note.n3{left:45%;bottom:48%;font-size:clamp(12px,1.8vw,21px);animation-delay:4s!important}
+@keyframes noteFloat{0%{opacity:0;transform:translateY(0) rotate(-6deg)}15%{opacity:.95}100%{opacity:0;transform:translateY(-9vh) translateX(3vw) rotate(10deg)}}
+.moonreflect{position:absolute;right:12%;bottom:8%;width:12%;height:26%;z-index:4;opacity:.5;filter:blur(4px);
+  background:repeating-linear-gradient(180deg, oklch(0.93 0.02 90/.5) 0 3px, transparent 3px 9px);
+  animation:shimmer 3s ease-in-out infinite alternate}
+@keyframes shimmer{from{transform:scaleY(.92) skewX(-3deg)}to{transform:scaleY(1.05) skewX(3deg)}}
+
+/* ===== 9 麻风病院 ===== */
+#sc-hospital .sky{background:linear-gradient(180deg,oklch(0.62 0.04 220),oklch(0.5 0.05 225) 60%,oklch(0.38 0.05 230))}
+#sc-hospital .ground{position:absolute;left:0;right:0;bottom:0;height:34%;background:oklch(0.55 0.03 220)}
+.limeline{position:absolute;left:0;right:0;bottom:24%;height:1.4%;z-index:5;
+  background:repeating-linear-gradient(90deg,var(--paper) 0 18px,transparent 18px 30px);opacity:.9}
+.building{position:absolute;left:8%;bottom:34%;width:30%;height:42%;background:oklch(0.74 0.02 220);box-shadow:inset 0 -20px 40px oklch(0.4 0.03 220/.4);z-index:3}
+.building .win{position:absolute;width:14%;height:20%;background:oklch(0.9 0.05 95/.9);box-shadow:0 0 18px 4px oklch(0.85 0.08 95/.5)}
+.building .win:nth-child(1){left:14%;top:16%}.building .win:nth-child(2){left:42%;top:16%}.building .win:nth-child(3){left:70%;top:16%}
+.redcross{position:absolute;left:44%;top:2%;width:11%;aspect-ratio:1;z-index:4}
+.redcross::before,.redcross::after{content:"";position:absolute;background:oklch(0.52 0.17 30)}
+.redcross::before{left:35%;top:0;width:30%;height:100%}
+.redcross::after{left:0;top:35%;width:100%;height:30%}
+.hosp-slogan{position:absolute;left:8%;bottom:79%;font-size:clamp(9px,1.1vw,13px);letter-spacing:.25em;color:oklch(0.3 0.03 225);z-index:4}
+.fig-nurseA{left:40%;bottom:26%;width:4.6%;z-index:6}
+.fig-nurseB{left:57%;bottom:26%;width:4.6%;z-index:6}
+.fig-nurseA svg path:last-child,.fig-nurseB svg path:last-child{fill:#e8e4da}
+.parcel{position:absolute;left:45%;bottom:34%;width:4%;z-index:7;opacity:0}
+.scene.active .parcel{animation:toss 2.6s 6s ease forwards}
+@keyframes toss{0%{opacity:0;transform:translate(0,0)}10%{opacity:1}55%{transform:translate(6.5vw,-7vw) rotate(300deg)}100%{opacity:1;transform:translate(11vw,1vw) rotate(720deg)}}
+.pot{position:absolute;right:12%;bottom:26%;width:7%;z-index:6}
+.steam{position:absolute;right:14%;bottom:37%;width:3%;height:16%;opacity:.7;z-index:6;
+  background:linear-gradient(180deg,transparent,oklch(0.95 0.01 220/.5));filter:blur(4px);animation:steamUp 3s ease-in-out infinite}
+@keyframes steamUp{0%{transform:translateY(8%) scaleY(.7);opacity:0}40%{opacity:.7}100%{transform:translateY(-24%) scaleY(1.15);opacity:0}}
+
+/* ===== 10 水上婚礼 ===== */
+#sc-wedding .sky{background:linear-gradient(180deg,oklch(0.2 0.07 22),oklch(0.26 0.08 26) 55%,oklch(0.3 0.07 230))}
+#sc-wedding .boat{left:31%;bottom:13%;width:38%}
+.lanterns{position:absolute;left:0;right:0;top:8%;height:10%;z-index:8}
+.lanterns i{position:absolute;top:0;width:2.4%;aspect-ratio:.8;border-radius:46%;
+  background:radial-gradient(circle at 40% 35%,oklch(0.75 0.16 45),var(--red));
+  box-shadow:0 0 22px 7px oklch(0.6 0.15 35/.55);animation:sway 3.4s ease-in-out infinite}
+.lanterns i:nth-child(1){left:14%}.lanterns i:nth-child(2){left:34%;animation-delay:.5s}.lanterns i:nth-child(3){left:54%;animation-delay:1s}.lanterns i:nth-child(4){left:74%;animation-delay:1.4s}.lanterns i:nth-child(5){left:88%;animation-delay:.8s}
+@keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(5deg)}}
+.fig-bride{left:44%;bottom:31%;width:4.8%;z-index:9}
+.fig-groom{left:52%;bottom:31%;width:5%;z-index:9}
+.scene.active .fig-bride,.scene.active .fig-groom{animation:bow 4s 6s ease}
+@keyframes bow{0%,100%{transform:rotate(0)}30%,60%{transform:rotate(9deg) translateY(1%)}}
+.spark{position:absolute;width:.7%;aspect-ratio:1;border-radius:50%;background:var(--gold);opacity:0;z-index:9}
+.scene.active .spark{animation:sparkUp 2.8s ease-in infinite}
+.spark.s1{left:26%;bottom:20%}.spark.s2{left:66%;bottom:24%;animation-delay:.9s!important}.spark.s3{left:80%;bottom:16%;animation-delay:1.7s!important}
+@keyframes sparkUp{0%{opacity:0;transform:translateY(0)}12%{opacity:1}100%{opacity:0;transform:translateY(-16vh)}}
+
+/* ===== 11 1966 送别 ===== */
+#sc-farewell .sky{background:linear-gradient(180deg,oklch(0.09 0.02 240),oklch(0.13 0.03 235) 55%,oklch(0.18 0.04 230))}
+#sc-farewell .moon{right:24%;top:10%;opacity:.6}
+.posterwall{position:absolute;left:4%;top:12%;width:20%;height:26%;z-index:4;transform:rotate(-1deg)}
+.posterwall i{position:absolute;background:oklch(0.55 0.14 32);box-shadow:0 2px 8px oklch(0 0 0/.4)}
+.posterwall i:nth-child(1){left:0;top:0;width:44%;height:58%}
+.posterwall i:nth-child(2){left:50%;top:8%;width:44%;height:50%}
+.posterwall i:nth-child(3){left:8%;top:66%;width:60%;height:30%}
+#sc-farewell .boat{left:28%;bottom:20%;width:18%}
+.scene.active #sc-farewell .boat{animation:rock 5s ease-in-out infinite,sailAway 14s 4s linear forwards}
+@keyframes sailAway{to{transform:translateX(46vw) scale(.55);opacity:.25}}
+.fig-sendoff{left:18%;bottom:14%;width:5.2%;z-index:9}
+.fig-sendoff2{left:23%;bottom:14%;width:5%;z-index:9}
+.blinklamp{position:absolute;bottom:33%;width:1.4%;aspect-ratio:1;border-radius:50%;background:var(--amber);box-shadow:0 0 16px 5px oklch(0.78 0.13 80/.7);z-index:9}
+.blinklamp.onboat{left:41%}
+.scene.active .blinklamp.onboat{animation:lampBlink 4s 2s ease forwards,sailAwayLamp 14s 4s linear forwards}
+.blinklamp.onshore{left:16%}
+.scene.active .blinklamp.onshore{animation:lampBlink 4s 2.4s ease forwards}
+@keyframes lampBlink{0%,100%{opacity:1}12%{opacity:.1}24%{opacity:1}36%{opacity:.1}48%{opacity:1}}
+@keyframes sailAwayLamp{to{transform:translateX(46vw);opacity:.2}}
+.gunflash{position:absolute;top:26%;width:3%;aspect-ratio:1;border-radius:50%;background:oklch(0.9 0.1 70);filter:blur(2px);opacity:0;z-index:8}
+.scene.active .gunflash{animation:gun 5s 15s linear}
+.gunflash.g1{right:12%}.gunflash.g2{right:20%;top:32%}
+@keyframes gun{0%,100%{opacity:0}2%{opacity:.9}4%{opacity:0}7%{opacity:.7}9%{opacity:0}13%{opacity:.85}15%{opacity:0}}
+.crystar{position:absolute;left:50%;top:30%;width:1%;aspect-ratio:1;border-radius:50%;background:var(--paper);box-shadow:0 0 20px 8px oklch(0.93 0.02 90/.6);opacity:0;z-index:9}
+.scene.active .crystar{animation:starBorn 4s 18s ease forwards}
+@keyframes starBorn{0%{opacity:0;transform:scale(.4)}40%{opacity:1;transform:scale(1.2)}100%{opacity:1;transform:scale(1)}}
+
+/* ===== 12 岁月蒙太奇 ===== */
+#sc-years .sky{background:linear-gradient(180deg,oklch(0.14 0.02 240),oklch(0.1 0.02 240))}
+.pcard{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%) rotate(-3deg);
+  width:34%;aspect-ratio:4/3;background:var(--paper);padding:1.8%;padding-bottom:7%;
+  box-shadow:0 16px 46px oklch(0 0 0/.55);opacity:0;z-index:10}
+.pcard .pin{position:absolute;left:50%;top:-3%;width:5%;aspect-ratio:1;border-radius:50%;background:var(--red);transform:translateX(-50%)}
+.pcard .pbody{width:100%;height:100%;position:relative;overflow:hidden;filter:sepia(.4)}
+.pcard .pyear{position:absolute;left:4%;bottom:2%;font-size:clamp(14px,2vw,24px);color:oklch(0.3 0.03 60);letter-spacing:.1em;z-index:2}
+.scene.active .pcard.p1{animation:cardFlash 22s .5s linear forwards}
+.scene.active .pcard.p2{animation:cardFlash 22s 6s linear forwards}
+.scene.active .pcard.p3{animation:cardFlash 22s 11.5s linear forwards}
+.scene.active .pcard.p4{animation:cardFlash 22s 17s linear forwards}
+@keyframes cardFlash{0%{opacity:0;transform:translate(-50%,-50%) rotate(-8deg) scale(.92)}4%{opacity:1;transform:translate(-50%,-50%) rotate(-3deg) scale(1)}20%{opacity:1}25%{opacity:0;transform:translate(-50%,-50%) rotate(4deg) scale(1.05)}100%{opacity:0}}
+.pb-exam{background:linear-gradient(160deg,oklch(0.88 0.03 90),oklch(0.75 0.04 85))}
+.pb-exam::after{content:"准考证";position:absolute;left:12%;top:16%;font-family:"Kaiti SC","STKaiti","KaiTi",serif;font-size:clamp(18px,2.6vw,32px);color:oklch(0.35 0.1 30);letter-spacing:.2em}
+.pb-debt{background:linear-gradient(160deg,oklch(0.85 0.04 80),oklch(0.7 0.05 75))}
+.pb-debt::after{content:"¥ 115,000";position:absolute;left:10%;top:20%;font-size:clamp(18px,2.8vw,34px);color:oklch(0.4 0.12 30);font-weight:700}
+.pb-debt::before{content:"";position:absolute;right:12%;bottom:14%;width:22%;aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle,var(--amber-2),oklch(0.45 0.14 40) 60%,transparent 72%);opacity:.9;animation:flicker 1.2s infinite}
+.pb-ash{background:linear-gradient(160deg,oklch(0.82 0.03 85),oklch(0.68 0.04 80))}
+.pb-ash::after{content:"结清";position:absolute;left:12%;top:18%;font-family:"Kaiti SC","STKaiti","KaiTi",serif;font-size:clamp(20px,3vw,38px);color:oklch(0.32 0.05 60);letter-spacing:.3em}
+.pb-tv{background:oklch(0.15 0.03 240)}
+.pb-tv .screen{position:absolute;left:14%;top:12%;width:72%;height:64%;border-radius:6px;
+  background:radial-gradient(circle at 50% 45%,oklch(0.75 0.1 220/.9),oklch(0.3 0.08 240));animation:tvGlow 1.8s ease-in-out infinite}
+.pb-tv .flagrise{position:absolute;left:46%;bottom:26%;width:8%;height:0;background:var(--red);animation:flagUp 4s .5s ease forwards}
+@keyframes flagUp{to{height:34%}}
+@keyframes tvGlow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.25)}}
+
+/* ===== 13 台风眼（重做：云墙 + 金光 + 诀别双人 + 舵轮） ===== */
+#sc-eye .sky{background:oklch(0.35 0.08 220)}
+.eyewall{position:absolute;left:50%;top:-46%;width:190%;aspect-ratio:1;transform:translateX(-50%);border-radius:50%;z-index:2;
+  background:conic-gradient(from 0deg,oklch(0.2 0.05 235),oklch(0.32 0.06 230),oklch(0.18 0.05 240),oklch(0.34 0.06 228),oklch(0.2 0.05 235));
+  animation:spinSlow 26s linear infinite;filter:blur(3px);opacity:.95}
+.eyewall::after{content:"";position:absolute;inset:24%;border-radius:50%;
+  background:radial-gradient(circle,oklch(0.92 0.1 95) 0%,oklch(0.76 0.1 90) 32%,oklch(0.45 0.07 225) 66%,transparent 72%)}
+.eyewall2{position:absolute;left:50%;top:-40%;width:176%;aspect-ratio:1;transform:translateX(-50%);border-radius:50%;z-index:3;opacity:.5;filter:blur(8px);
+  background:conic-gradient(from 120deg,transparent,oklch(0.16 0.04 240),transparent,oklch(0.2 0.05 235),transparent);
+  animation:spinSlow2 18s linear infinite reverse}
+@keyframes spinSlow{to{transform:translateX(-50%) rotate(360deg)}}
+@keyframes spinSlow2{to{transform:translateX(-50%) rotate(-360deg)}}
+.goldbeam{position:absolute;left:38%;top:6%;width:24%;height:74%;z-index:4;
+  background:linear-gradient(180deg,oklch(0.92 0.1 95/.55),transparent);filter:blur(10px)}
+#sc-eye .horizon-sea{background:linear-gradient(180deg,oklch(0.6 0.09 220),oklch(0.45 0.08 225) 45%,oklch(0.32 0.06 230));height:34%;z-index:5}
+.birds{position:absolute;left:20%;top:34%;width:10%;height:6%;z-index:6;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 40'%3E%3Cpath d='M10 20 Q18 10 26 20 M26 20 Q34 10 42 20' stroke='%23222f3c' stroke-width='2.4' fill='none'/%3E%3Cpath d='M58 10 Q64 3 70 10 M70 10 Q76 3 82 10' stroke='%23222f3c' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-size:100% 100%;animation:birdsDrift 12s ease-in-out infinite alternate}
+@keyframes birdsDrift{from{transform:translate(0,0)}to{transform:translate(8vw,1.5vh)}}
+#sc-eye .boat{left:36%;bottom:12%;width:27%;animation:rock 7s ease-in-out infinite}
+.fig-gran{left:47%;bottom:24.5%;width:4.8%;z-index:9}
+.fig-wuyue{left:54%;bottom:24.5%;width:4.4%;z-index:9}
+.scene.active .fig-gran{animation:granFade 5s 19s ease forwards}
+@keyframes granFade{to{opacity:0;transform:translateY(-2vh)}}
+.wheel{position:absolute;left:73%;bottom:20%;width:9%;z-index:9;opacity:.9}
+.scene.active .wheel svg{animation:wheelTurn 6s 19s ease forwards}
+@keyframes wheelTurn{0%{transform:rotate(0)}100%{transform:rotate(80deg)}}
+.wheel-rim{fill:none;stroke:#2c2418;stroke-width:5}
+.wheel-spoke{stroke:#2c2418;stroke-width:4}
+.wheel-hub{fill:#4a3c26}
+#sc-eye .whale{left:50.5%;bottom:52%;width:4%;opacity:0;z-index:12}
+.scene.active #sc-eye .whale{animation:whaleGift 5s 12s ease forwards}
+@keyframes whaleGift{0%{opacity:0;transform:translateY(-1vh)}25%{opacity:1}70%{opacity:1;transform:translateY(9vh) translateX(2.6vw)}100%{opacity:1;transform:translateY(14vh) translateX(3vw)}}
+
+/* ===== 14 尾声 ===== */
+#sc-finale .sky{background:linear-gradient(180deg,oklch(0.12 0.03 235),oklch(0.18 0.045 230) 55%,oklch(0.26 0.06 225))}
+#sc-finale .boat{left:36%;bottom:16%;width:22%}
+.fig-oldtwo{left:43%;bottom:26%;width:4.8%;z-index:9}
+.fig-oldtwo2{left:49%;bottom:26%;width:4.6%;z-index:9}
+#sc-finale .phone{right:14%;bottom:14%;left:auto}
+.endcard{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1em;z-index:15;opacity:0}
+.scene.active .endcard{animation:fadeUp 4s 16s ease forwards}
+.endcard h2{font-family:"Kaiti SC","STKaiti","KaiTi",serif;font-size:clamp(30px,5vw,60px);letter-spacing:.4em;text-indent:.4em;color:var(--paper)}
+.endcard p{font-size:clamp(12px,1.4vw,16px);letter-spacing:.3em;color:var(--paper-dim)}
+
+/* ===== 控制条 ===== */
+.controls{display:flex;align-items:center;gap:10px;width:100%;max-width:1120px;margin:12px auto 0;
+  padding:8px 12px;background:oklch(0.16 0.025 235);border-radius:8px;flex-wrap:wrap}
+.controls button{min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;
+  background:transparent;border:1px solid oklch(0.35 0.04 230);border-radius:6px;color:var(--paper);transition:background .2s}
+.controls button:hover{background:oklch(0.24 0.04 230)}
+.controls button svg{width:18px;height:18px;fill:currentColor}
+.progress{flex:1 1 140px;height:44px;display:flex;align-items:center;cursor:pointer}
+.progress .track{width:100%;height:5px;border-radius:3px;background:oklch(0.3 0.04 230);overflow:hidden}
+.progress .bar{height:100%;width:0%;background:linear-gradient(90deg,var(--amber-2),var(--amber))}
+#time{font-size:12px;color:var(--paper-dim);letter-spacing:.05em;min-width:86px;text-align:center;font-variant-numeric:tabular-nums}
+.dots{display:flex;gap:5px;flex-wrap:wrap;max-width:100%}
+.dots i{width:9px;height:9px;border-radius:50%;background:oklch(0.34 0.04 230);cursor:pointer;transition:transform .2s,background .2s;border:none;padding:0}
+.dots i:hover{transform:scale(1.4)}
+.dots i.on{background:var(--amber)}
+
+#start-overlay{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+  background:oklch(0.08 0.02 235 / .82);backdrop-filter:blur(3px);transition:opacity .8s}
+#start-overlay.hide{opacity:0;pointer-events:none}
+#btn-start{min-width:200px;min-height:56px;padding:0 34px;font-size:19px;letter-spacing:.3em;text-indent:.3em;
+  font-family:"Kaiti SC","STKaiti","KaiTi",serif;color:var(--ink);
+  background:linear-gradient(180deg,var(--paper),var(--paper-dim));border:none;border-radius:999px;
+  box-shadow:0 8px 30px oklch(0.78 0.13 80/.35);transition:transform .2s}
+#btn-start:hover{transform:scale(1.05)}
+#start-overlay p{font-size:13px;letter-spacing:.25em;color:var(--paper-dim)}
+
+@media (max-width:640px){
+  #time{display:none}
+  .dots{display:none}
+  .controls{gap:6px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01s!important;animation-iteration-count:1!important}
+  .scene{transition:opacity .3s}
+}
+</style>
+</head>
+<body>
+<!-- ===== SVG 符号库：人形 / 船 / 道具 ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- 疍家船：船板缝 + 篷肋 + 翘尾 + 桅杆 + 船窗暖光 + 船名 -->
+    <symbol id="sym-boat" viewBox="0 0 240 110">
+      <path class="hull" d="M6 58 Q100 108 194 58 L198 48 Q186 52 180 44 L22 44 Q16 52 2 46 Z"/>
+      <path class="hull-line" d="M22 56 Q100 96 182 56"/>
+      <path class="hull-line" d="M28 66 Q100 102 174 66"/>
+      <path class="cabin" d="M62 44 Q120 4 158 44 Z"/>
+      <path class="rib" d="M74 44 Q120 14 150 44"/>
+      <path class="rib" d="M88 44 Q120 24 142 44"/>
+      <rect class="cabin-roof" x="58" y="41" width="104" height="4" rx="2"/>
+      <rect class="cabinglow" x="96" y="26" width="12" height="10" rx="1.5"/>
+      <path class="mast" d="M42 44 L45 2 L48 44 Z"/>
+      <path class="flagred" d="M45 3 L70 9 L45 15 Z" opacity="0"/>
+      <circle class="boatlight" cx="45" cy="1" r="2.4"/>
+      <text class="bname" x="24" y="84">淑仪号</text>
+    </symbol>
+    <!-- 女孩：两束短辫（小淑珍/武岳） -->
+    <symbol id="sym-girl" viewBox="0 0 60 120">
+      <circle cx="30" cy="18" r="11"/>
+      <path d="M19 14 Q8 20 11 34 L16 31 Q13 22 21 20 Z"/>
+      <path d="M41 14 Q52 20 49 34 L44 31 Q47 22 39 20 Z"/>
+      <path d="M30 29 Q18 40 20 74 L16 112 L26 112 L29 76 L31 76 L34 112 L44 112 L40 74 Q42 40 30 29 Z"/>
+      <path d="M21 38 Q12 50 14 60 L18 58 Q16 50 24 42 Z"/>
+      <path d="M39 38 Q48 40 46 60 L42 58 Q44 50 36 42 Z"/>
+    </symbol>
+    <!-- 妇人：低髻、斜襟衫（月娥/护士/淑珍） -->
+    <symbol id="sym-woman" viewBox="0 0 60 120">
+      <circle cx="30" cy="17" r="10.5"/>
+      <circle cx="30" cy="6" r="4.5"/>
+      <path d="M30 28 Q17 40 19 76 L15 112 L25 112 L28 78 L32 78 L35 112 L45 112 L41 76 Q43 40 30 28 Z"/>
+      <path d="M20 36 Q11 52 15 68 L19 66 Q17 54 25 42 Z"/>
+      <path d="M40 38 Q50 48 47 64 L43 62 Q45 52 35 42 Z"/>
+    </symbol>
+    <!-- 男人：短发、立领（邓公/李泰/老武） -->
+    <symbol id="sym-man" viewBox="0 0 60 120">
+      <circle cx="30" cy="17" r="10.5"/>
+      <path d="M30 28 Q15 36 17 72 L19 112 L27 112 L29 76 L31 76 L33 112 L41 112 L43 76 Q45 36 30 28 Z"/>
+      <path d="M18 34 Q10 48 13 64 L17 62 Q15 52 23 40 Z"/>
+      <path d="M42 34 Q50 48 47 64 L43 62 Q45 52 37 40 Z"/>
+    </symbol>
+    <!-- 奔跑的少女：齐耳短发（淑仪） -->
+    <symbol id="sym-runner" viewBox="0 0 70 120">
+      <circle cx="36" cy="16" r="10"/>
+      <path d="M27 8 Q22 18 27 26 L31 22 Q28 16 31 12 Z"/>
+      <path d="M36 27 Q26 34 24 52 L34 66 L22 92 L14 110 L22 113 L34 92 L42 74 L48 92 L58 106 L65 101 L54 84 L48 60 Q50 40 36 26 Z"/>
+      <path d="M26 40 Q14 42 8 52 L13 56 Q19 48 28 47 Z"/>
+      <path d="M44 38 Q56 40 62 34 L59 29 Q52 34 42 33 Z"/>
+    </symbol>
+    <!-- 老妇人：拄杖、微驼（外婆/药嫲/秀胧晚年） -->
+    <symbol id="sym-old" viewBox="0 0 64 120">
+      <circle cx="28" cy="20" r="10"/>
+      <circle cx="28" cy="9" r="4"/>
+      <path d="M28 31 Q16 44 20 76 L17 112 L26 112 L29 80 L33 80 L35 112 L44 112 L42 74 Q44 46 28 31 Z"/>
+      <path d="M38 44 Q48 52 50 62 L54 112 L58 112 L54 60 Q50 48 40 40 Z"/>
+    </symbol>
+    <!-- 小孩 -->
+    <symbol id="sym-child" viewBox="0 0 50 90">
+      <circle cx="30" cy="16" r="10"/>
+      <path d="M30 27 Q19 36 21 60 L18 84 L26 84 L28 62 L32 62 L34 84 L42 84 L39 60 Q41 36 30 27 Z"/>
+    </symbol>
+    <!-- 宝螺小鲸鱼 -->
+    <symbol id="sym-whale" viewBox="0 0 60 40">
+      <path class="whale-sh" d="M6 24 Q16 6 38 10 Q56 14 54 24 Q52 32 36 32 L18 32 Q8 32 6 24 Z"/>
+      <path class="whale-sh" d="M48 14 L60 6 L56 18 Z"/>
+      <path d="M24 24 a4.5 4.5 0 1 1 4.5 4.5 a3 3 0 1 0 3 -3" fill="none" stroke="#b8ab8d" stroke-width="1.2"/>
+      <circle class="whale-eye" cx="16" cy="20" r="2.2"/>
+      <path class="whale-str" d="M28 8 Q30 2 34 0"/>
+    </symbol>
+    <!-- 舵轮 -->
+    <symbol id="sym-wheel" viewBox="0 0 100 100">
+      <circle class="wheel-rim" cx="50" cy="50" r="34"/>
+      <g class="wheel-spoke">
+        <path d="M50 8 V92"/><path d="M8 50 H92"/>
+        <path d="M20 20 L80 80"/><path d="M80 20 L20 80"/>
+      </g>
+      <circle class="wheel-hub" cx="50" cy="50" r="9"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="app">
+  <div class="stage" id="stage" role="img" aria-label="《叹家姐》动画小片播放区">
+
+    <!-- 1 片头 -->
+    <section class="scene" id="sc-title">
+      <div class="sky"></div><div class="moon"></div>
+      <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
+      <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
+      <div class="bigtitle"><h1>叹家姐</h1><p>疍 家 四 代 女 人 · 一 艘 船 的 百 年</p></div>
+    </section>
+
+    <!-- 2 巴黎电话（2020s） -->
+    <section class="scene" id="sc-paris">
+      <div class="sky"></div>
+      <div class="window">
+        <div class="eiffel"><svg viewBox="0 0 60 90" width="100%"><path d="M30 4 L36 30 L46 86 L38 86 L33 62 L27 62 L22 86 L12 86 L24 30 Z M24 44 L36 44 M20 70 L40 70" stroke="#0d1420" stroke-width="2.6" fill="none"/></svg></div>
+        <i class="citylight"></i><i class="citylight"></i>
+      </div>
+      <div class="counter"></div><div class="lampglow"></div>
+      <div class="sketchbook"></div>
+      <div class="phoneglow"></div><div class="phone"></div>
+      <div class="cc"><div class="no">第一幕 · 远方</div><div class="t">外婆被那条船吃了</div></div>
+    </section>
+
+    <!-- 3 1944 空袭送信 -->
+    <section class="scene" id="sc-raid">
+      <div class="sky"></div>
+      <div class="beam b1"></div><div class="beam b2"></div>
+      <div class="siren">1944 · 空 袭 警 报</div>
+      <div class="qilou">
+        <div class="bld" style="left:0;width:22%;height:74%"><i></i><i></i><i></i></div>
+        <div class="bld" style="left:20%;width:18%;height:96%"><i></i><i></i><i></i></div>
+        <div class="bld" style="left:70%;width:20%;height:82%"><i></i><i></i><i></i></div>
+        <div class="bld" style="left:88%;width:12%;height:60%"><i></i></div>
+      </div>
+      <div class="tree"><svg viewBox="0 0 100 160" width="100%"><path d="M46 160 L50 70 L30 30 L48 52 L58 18 L62 54 L82 34 L64 72 L68 160 Z" fill="#0a0f16"/><ellipse cx="52" cy="26" rx="34" ry="20" fill="#0d141d"/></svg></div>
+      <div class="fig fig-raidgirl"><svg viewBox="0 0 60 120" class="rim-cold"><use href="#sym-girl" class="sk-girl" fill="#0c1522"/></svg></div>
+      <div class="fig fig-raidmom"><svg viewBox="0 0 60 120"><use href="#sym-woman" fill="#101a29"/></svg></div>
+      <div class="fig fig-raidman"><svg viewBox="0 0 60 120"><use href="#sym-man" fill="#0d1420"/></svg></div>
+      <div class="cc"><div class="no">1944 · 口信</div><div class="t">就是妹仔才没人疑</div></div>
+    </section>
+
+    <!-- 4 1945 碑亭合影 -->
+    <section class="scene" id="sc-stele">
+      <div class="sky"></div><div class="sun"></div><div class="ground"></div>
+      <div class="bunting"></div>
+      <div class="pavilion"><svg viewBox="0 0 120 110" width="100%">
+        <path class="pv-roof" d="M10 34 Q60 0 110 34 L100 40 Q60 14 20 40 Z"/>
+        <rect class="pv-col" x="24" y="40" width="7" height="52"/><rect class="pv-col" x="89" y="40" width="7" height="52"/>
+        <rect class="pv-stele" x="46" y="46" width="28" height="46"/>
+        <text class="pv-text" x="60" y="58" text-anchor="middle" writing-mode="tb">胜利纪念</text>
+      </svg></div>
+      <div class="photo-frame"><div class="photo-inner">
+        <svg viewBox="0 0 200 150" width="100%" height="100%">
+          <rect x="70" y="18" width="60" height="46" fill="#8a7a5e"/>
+          <path d="M62 18 Q100 -6 138 18 L130 25 Q100 7 70 25 Z" fill="#6a5c42"/>
+          <circle class="ph-man" cx="84" cy="90" r="11"/><path class="ph-man" d="M84 101 L72 148 L96 148 Z"/>
+          <circle class="ph-girl" cx="122" cy="104" r="8"/>
+          <path class="ph-girl" d="M113 102 Q106 96 108 88 L112 90 Q111 95 116 98 Z"/>
+          <path class="ph-girl" d="M131 102 Q138 96 136 88 L132 88 Q133 95 128 98 Z"/>
+          <path class="ph-girl" d="M122 112 L113 148 L131 148 Z"/>
+        </svg>
+        <div class="ph-cap">1946 · 与细女淑珍</div>
+      </div></div>
+      <div class="bulb"></div>
+      <div class="cc"><div class="no">1945 · 碑亭</div><div class="t">一颗小石子</div></div>
+    </section>
+
+    <!-- 5 淑仪（1950s 初） -->
+    <section class="scene" id="sc-sister">
+      <div class="sky"></div><div class="moon"></div>
+      <div class="banner-red">庆 祝 市 运 会 大 捷</div>
+      <div class="shed"><i class="crack c1"></i><i class="crack c2"></i><i class="crack c3"></i></div>
+      <div class="fig fig-runner"><svg viewBox="0 0 70 120"><use href="#sym-runner" fill="#0c1522"/></svg></div>
+      <div class="fig shedfig"><svg viewBox="0 0 60 120"><use href="#sym-girl"/></svg></div>
+      <div class="candle"></div>
+      <div class="cc"><div class="no">家姐 · 淑仪</div><div class="t">能救人呀</div></div>
+    </section>
+
+    <!-- 6 上船·淑仪号 -->
+    <section class="scene" id="sc-boat">
+      <div class="sky"></div><div class="moon"></div>
+      <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
+      <div class="pier"></div>
+      <i class="jewel j1"></i><i class="jewel j2"></i><i class="jewel j3"></i>
+      <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
+      <div class="fig fig-moon6"><svg viewBox="0 0 60 120"><use href="#sym-woman" fill="#101a29"/></svg></div>
+      <div class="fig fig-girl6"><svg viewBox="0 0 60 120"><use href="#sym-girl" fill="#0c1522"/></svg></div>
+      <div class="whale"><svg viewBox="0 0 60 40"><use href="#sym-whale"/></svg></div>
+      <div class="cc"><div class="no">第二幕 · 上船</div><div class="t">淑仪号</div></div>
+    </section>
+
+    <!-- 7 台风夜 -->
+    <section class="scene" id="sc-typhoon">
+      <div class="sky"></div>
+      <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
+      <div class="rain"></div><div class="flash stormy"></div>
+      <div class="fish f1"><svg viewBox="0 0 40 20"><path class="fishbody" d="M2 12 Q14 2 30 10 L38 4 L36 12 L38 20 L30 14 Q14 22 2 12 Z"/></svg></div>
+      <div class="fish f2"><svg viewBox="0 0 40 20"><path class="fishbody" d="M2 12 Q14 2 30 10 L38 4 L36 12 L38 20 L30 14 Q14 22 2 12 Z"/></svg></div>
+      <div class="fish f3"><svg viewBox="0 0 40 20"><path class="fishbody" d="M2 12 Q14 2 30 10 L38 4 L36 12 L38 20 L30 14 Q14 22 2 12 Z"/></svg></div>
+      <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
+      <div class="rope"></div>
+      <div class="rescue"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
+      <div class="fig rescuer"><svg viewBox="0 0 60 120"><use href="#sym-man" fill="#0a1220"/></svg></div>
+      <div class="cc"><div class="no">台风夜</div><div class="t">鱼起水，台风嘴</div></div>
+    </section>
+
+    <!-- 8 叹家姐（核心） -->
+    <section class="scene" id="sc-song">
+      <div class="sky"></div><div class="stars"></div><div class="moon"></div><div class="moonpath"></div>
+      <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
+      <div class="moonreflect"></div>
+      <div class="boat boat2"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
+      <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
+      <div class="fig fig-singer"><svg viewBox="0 0 64 120"><use href="#sym-old" fill="#101c28"/></svg></div>
+      <div class="fig fig-listener"><svg viewBox="0 0 60 120"><use href="#sym-girl" fill="#0c1522"/></svg></div>
+      <div class="lantern"></div>
+      <div class="note n1">♪</div><div class="note n2">♫</div><div class="note n3">♪</div>
+      <div class="cc"><div class="no">疍家挽歌</div><div class="t">叹家姐</div></div>
+    </section>
+
+    <!-- 9 麻风病院（1950s） -->
+    <section class="scene" id="sc-hospital">
+      <div class="sky"></div><div class="ground"></div>
+      <div class="building"><i class="win"></i><i class="win"></i><i class="win"></i><div class="redcross"></div></div>
+      <div class="hosp-slogan">防 治 麻 风 · 人 人 有 责</div>
+      <div class="limeline"></div>
+      <div class="fig fig-nurseA"><svg viewBox="0 0 60 120"><use href="#sym-woman" fill="#2c3844"/><path d="M30 28 Q17 40 19 76 L15 112 L25 112 L28 78 L32 78 L35 112 L45 112 L41 76 Q43 40 30 28 Z"/></svg></div>
+      <div class="fig fig-nurseB"><svg viewBox="0 0 60 120"><use href="#sym-woman" fill="#2c3844"/><path d="M30 28 Q17 40 19 76 L15 112 L25 112 L28 78 L32 78 L35 112 L45 112 L41 76 Q43 40 30 28 Z"/></svg></div>
+      <div class="parcel"><svg viewBox="0 0 40 30" width="100%"><rect x="2" y="4" width="36" height="24" rx="4" fill="#8a7a5a"/><path d="M2 12 L38 12" stroke="#6a5c42" stroke-width="2"/></svg></div>
+      <div class="pot"><svg viewBox="0 0 60 50" width="100%"><ellipse cx="30" cy="42" rx="26" ry="7" fill="#22303c"/><path d="M6 40 Q6 14 30 14 Q54 14 54 40 Z" fill="#31424f"/><rect x="24" y="6" width="12" height="9" rx="3" fill="#22303c"/></svg></div>
+      <div class="steam"></div>
+      <div class="cc"><div class="no">1950s · 麻风病院</div><div class="t">隔着石灰线的牛郎织女</div></div>
+    </section>
+
+    <!-- 10 水上婚礼 -->
+    <section class="scene" id="sc-wedding">
+      <div class="sky"></div>
+      <div class="lanterns"><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
+      <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/><path class="flagred" d="M45 3 L70 9 L45 15 Z"/><rect x="88" y="18" width="46" height="14" rx="2" fill="#7e2c22"/><text class="rname" x="94" y="29">花 船</text></svg></div>
+      <div class="fig fig-bride"><svg viewBox="0 0 60 120"><use href="#sym-woman" fill="#1c1016"/></svg></div>
+      <div class="fig fig-groom"><svg viewBox="0 0 60 120"><use href="#sym-man" fill="#101820"/></svg></div>
+      <i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i>
+      <div class="cc"><div class="no">水上婚礼</div><div class="t">再捞我一次</div></div>
+    </section>
+
+    <!-- 11 1966 送别 -->
+    <section class="scene" id="sc-farewell">
+      <div class="sky"></div><div class="moon"></div>
+      <div class="posterwall"><i></i><i></i><i></i></div>
+      <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
+      <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
+      <div class="fig fig-sendoff"><svg viewBox="0 0 60 120"><use href="#sym-woman" fill="#0e1826"/></svg></div>
+      <div class="fig fig-sendoff2"><svg viewBox="0 0 60 120"><use href="#sym-man" fill="#0d1420"/></svg></div>
+      <i class="blinklamp onboat"></i><i class="blinklamp onshore"></i>
+      <i class="gunflash g1"></i><i class="gunflash g2"></i>
+      <i class="crystar"></i>
+      <div class="cc"><div class="no">1966 · 送别</div><div class="t">煤油灯闪了两下</div></div>
+    </section>
+
+    <!-- 12 岁月蒙太奇 -->
+    <section class="scene" id="sc-years">
+      <div class="sky"></div>
+      <div class="pcard p1"><i class="pin"></i><div class="pbody pb-exam"><span class="pyear">1977</span></div></div>
+      <div class="pcard p2"><i class="pin"></i><div class="pbody pb-debt"><span class="pyear">1993</span></div></div>
+      <div class="pcard p3"><i class="pin"></i><div class="pbody pb-ash"><span class="pyear">1998</span></div></div>
+      <div class="pcard p4"><i class="pin"></i><div class="pbody pb-tv"><i class="screen"></i><i class="flagrise"></i><span class="pyear" style="color:#cfc4a8">1997.7.1</span></div></div>
+      <div class="cc"><div class="no">第三幕 · 岁月</div><div class="t">浪潮里沉沉浮浮</div></div>
+    </section>
+
+    <!-- 13 台风眼（诀别） -->
+    <section class="scene" id="sc-eye">
+      <div class="sky"></div>
+      <div class="eyewall"></div><div class="eyewall2"></div><div class="goldbeam"></div>
+      <div class="birds"></div>
+      <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
+      <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
+      <div class="fig fig-gran"><svg viewBox="0 0 64 120" class="rim"><use href="#sym-old" fill="#0e1a26"/></svg></div>
+      <div class="fig fig-wuyue"><svg viewBox="0 0 60 120"><use href="#sym-girl" fill="#0c1522"/></svg></div>
+      <div class="wheel"><svg viewBox="0 0 100 100"><use href="#sym-wheel"/></svg></div>
+      <div class="whale"><svg viewBox="0 0 60 40"><use href="#sym-whale"/></svg></div>
+      <div class="cc"><div class="no">第四幕 · 台风眼</div><div class="t">顺风顺水</div></div>
+    </section>
+
+    <!-- 14 尾声 -->
+    <section class="scene" id="sc-finale">
+      <div class="sky"></div><div class="stars"></div><div class="moon"></div><div class="moonpath"></div>
+      <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
+      <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
+      <div class="fig fig-oldtwo"><svg viewBox="0 0 64 120"><use href="#sym-old" fill="#101c28"/></svg></div>
+      <div class="fig fig-oldtwo2"><svg viewBox="0 0 64 120"><use href="#sym-old" fill="#121e2c"/></svg></div>
+      <div class="phoneglow"></div><div class="phone"></div>
+      <div class="endcard"><h2>剧 终</h2><p>献给每一位撑起一个家的家姐</p></div>
+      <div class="cc"><div class="no">尾声 · 老伴</div><div class="t">循着月影就归家</div></div>
+    </section>
+
+    <div class="grain"></div><div class="vignette"></div>
+    <div class="letterbox top"></div><div class="letterbox bottom"></div>
+    <div id="subtitle"></div>
+
+    <div id="start-overlay">
+      <button id="btn-start">开始放映</button>
+      <p>《叹家姐》· 约 4 分半 · 建议开启声音</p>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="btn-prev" aria-label="上一幕" title="上一幕"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+    <button id="btn-play" aria-label="播放或暂停" title="播放/暂停"><svg viewBox="0 0 24 24"><path d="M7 4l14 8-14 8z"/></svg></button>
+    <button id="btn-next" aria-label="下一幕" title="下一幕"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button>
+    <div class="progress" id="progress" title="点击跳转"><div class="track"><div class="bar" id="bar"></div></div></div>
+    <span id="time">00:00 / 00:00</span>
+    <div class="dots" id="dots"></div>
+    <button id="btn-mute" aria-label="声音开关" title="声音开关"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg></button>
+  </div>
+</div>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
