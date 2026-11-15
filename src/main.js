@@ -205,31 +205,32 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft') btnPrev.click();
 });
 
-// ---------- 声音引擎（本地合成音频文件：环境声 / 配乐 / 音效） -------
+// ---------- 声音引擎（叹家姐挽歌 + 海浪为全片持续底声，各幕只加点缀） -------
 const AU = 'assets/audio/';
+// 每幕：sea/lament=底声目标音量；acc=循环点缀；fx=[秒, 名, 音量] 一次性音效
 const SCENE_AUDIO = {
-  'sc-title':    { amb: [['sea', .45]] },
-  'sc-paris':    { amb: [['rain', .38]] },
-  'sc-raid':     { amb: [['crowd', .22]], loopFx: [['siren', .5]] },
-  'sc-stele':    { amb: [['crowd', .18]], music: ['victory45', 1.0, .8] },
-  'sc-sister':   { amb: [['rain', .16]] },
-  'sc-boat':     { amb: [['sea', .45]] },
-  'sc-typhoon':  { amb: [['storm', .9]] },
-  'sc-song':     { amb: [['sea', .28]], music: ['lament', 3.0, .85] },
-  'sc-hospital': { amb: [['crowd', .12], ['sea', .12]] },
-  'sc-wedding':  { amb: [['sea', .3]], music: ['wedding', 1.0, .8], fx: [[2.0, 'firecrackers', .7]] },
-  'sc-farewell': { amb: [['sea', .32]], music: ['march66', 0.5, .3], fx: [[13.2, 'baby', .65]] },
-  'sc-years':    { amb: [['sea', .12]], music: ['pop90s', 1.0, .7] },
-  'sc-eye':      { amb: [['sea', .4]], fx: [[0.5, 'static', .3]], music: ['lament', 17.0, .55] },
-  'sc-finale':   { amb: [['sea', .38]], fx: [[0.6, 'static', .22]], music: ['lament', 5.0, .8] },
+  'sc-title':    { sea: .5,  lament: .55 },
+  'sc-paris':    { sea: .22, lament: .5 },
+  'sc-raid':     { sea: .15, lament: .3,  acc: [['siren', .26]] },
+  'sc-stele':    { sea: .3,  lament: .42 },
+  'sc-sister':   { sea: .18, lament: .6 },
+  'sc-boat':     { sea: .5,  lament: .42 },
+  'sc-typhoon':  { sea: .3,  lament: .3,  acc: [['thunder', .55]] },
+  'sc-song':     { sea: .28, lament: .9 },
+  'sc-hospital': { sea: .18, lament: .45 },
+  'sc-wedding':  { sea: .32, lament: .15, acc: [['wedding', .45]] },
+  'sc-farewell': { sea: .28, lament: .5,  fx: [[13.2, 'baby', .4]] },
+  'sc-years':    { sea: .18, lament: .5 },
+  'sc-eye':      { sea: .32, lament: .7,  acc: [['thunder', .3]] },
+  'sc-finale':   { sea: .38, lament: .85 },
 };
-const pool = {};      // name -> Audio（循环环境声底）
-let muted = false, activeEls = [], fxTimers = [];
+let muted = false, audioOn = false;
+const bedEls = {};           // sea / lament：贯穿全片的持续底声
+let accEls = [], fxTimers = [];
 
-function audioEl(name, loop) {
+function mkAudio(name, loop) {
   const a = new Audio(AU + name + '.wav');
   a.loop = loop; a.preload = 'auto';
-  activeEls.push(a);
   return a;
 }
 function fadeTo(a, v, ms, done) {
@@ -240,42 +241,46 @@ function fadeTo(a, v, ms, done) {
     if (i >= steps) { clearInterval(iv); if (v === 0) { a.pause(); } done && done(); }
   }, 50);
 }
-function stopAllAudio() {
-  fxTimers.forEach(clearTimeout); fxTimers = [];
-  activeEls.forEach(a => { a.pause(); a.currentTime = 0; });
-  activeEls = [];
+function startBed() {
+  if (bedEls.sea) return;
+  ['sea', 'lament'].forEach(n => {
+    const a = mkAudio(n, true); a.volume = 0;
+    a.play().catch(() => {});
+    bedEls[n] = a;
+  });
 }
 function setSceneAudio(id) {
-  if (!audioOn) return;
-  stopAllAudio();
-  const cfg = SCENE_AUDIO[id]; if (!cfg || muted) return;
-  (cfg.amb || []).forEach(([name, v]) => {
-    const a = audioEl(name, true); a.volume = 0; a.play().catch(() => {});
-    fadeTo(a, v, 1200);
+  if (!audioOn || muted) return;
+  startBed();
+  Object.values(bedEls).forEach(a => { if (a.paused) a.play().catch(() => {}); });
+  const cfg = SCENE_AUDIO[id]; if (!cfg) return;
+  fadeTo(bedEls.sea, cfg.sea != null ? cfg.sea : .3, 1500);
+  fadeTo(bedEls.lament, cfg.lament != null ? cfg.lament : .5, 1500);
+  // 换幕：淡出旧点缀，淡入新点缀
+  accEls.forEach(a => fadeTo(a, 0, 600));
+  accEls = [];
+  fxTimers.forEach(clearTimeout); fxTimers = [];
+  (cfg.acc || []).forEach(([name, v]) => {
+    const a = mkAudio(name, true); a.volume = 0; a.play().catch(() => {});
+    fadeTo(a, v, 1800); accEls.push(a);
   });
-  (cfg.loopFx || []).forEach(([name, v]) => {
-    const a = audioEl(name, true); a.volume = 0; a.play().catch(() => {});
-    fadeTo(a, v, 1800);
-  });
-  if (cfg.music) {
-    const [name, delay, v] = cfg.music;
-    fxTimers.push(setTimeout(() => {
-      const a = audioEl(name, false); a.volume = 0; a.play().catch(() => {});
-      fadeTo(a, v, 900);
-    }, delay * 1000));
-  }
   (cfg.fx || []).forEach(([at, name, v]) => {
     fxTimers.push(setTimeout(() => {
-      const a = audioEl(name, false); a.volume = v; a.play().catch(() => {});
+      if (muted) return;
+      const a = mkAudio(name, false); a.volume = v; a.play().catch(() => {});
+      accEls.push(a);
     }, at * 1000));
   });
 }
-function pauseAllAudio() { activeEls.forEach(a => a.pause()); fxTimers.forEach(clearTimeout); fxTimers = []; }
-let audioOn = false;
+function pauseAllAudio() {
+  Object.values(bedEls).forEach(a => a.pause());
+  accEls.forEach(a => a.pause());
+  fxTimers.forEach(clearTimeout); fxTimers = [];
+}
 btnMute.addEventListener('click', () => {
   muted = !muted;
   btnMute.innerHTML = '<svg viewBox="0 0 24 24">' + (muted ? ICO_MUTE : ICO_VOL) + '</svg>';
-  if (muted) stopAllAudio();
+  if (muted) pauseAllAudio();
   else if (playing && curIdx >= 0) setSceneAudio(scenes[curIdx].id);
 });
 

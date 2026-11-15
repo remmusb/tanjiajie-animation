@@ -49,6 +49,26 @@ button{cursor:pointer;font-family:inherit}
 /* ===== 场景通用 ===== */
 .scene{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity 1.2s ease,visibility 1.2s;z-index:1}
 .scene.active{opacity:1;visibility:visible;z-index:2}
+/* ===== 写实照片背景试点：sc-raid / sc-eye ===== */
+.bgimg{position:absolute;left:-7%;top:-7%;width:114%;height:114%;z-index:0;
+  background-size:cover;background-position:center;pointer-events:none;
+  opacity:0;transition:opacity 1.8s ease;filter:saturate(.88) brightness(.92)}
+.scene.active .bgimg{opacity:1;animation:kb 26s ease-in-out .4s infinite alternate}
+@keyframes kb{from{transform:scale(1.02) translate(.8%,.6%)}to{transform:scale(1.14) translate(-1.3%,-1%)}}
+#sc-raid .bgimg{background-image:url('assets/img/bg-raid.jpg')}
+#sc-eye .bgimg{background-image:url('assets/img/bg-eye.jpg')}
+/* 照片接管布景后隐藏这两幕的手绘背景件，保留人物与关键道具 */
+#sc-raid .sky,#sc-raid .beam,#sc-raid .qilou,#sc-raid .tree{display:none}
+#sc-eye .sky,#sc-eye .eyewall,#sc-eye .eyewall2,#sc-eye .goldbeam,#sc-eye .horizon-sea,#sc-eye .boat{display:none}
+/* 前景压暗渐变，让剪影人物立得住 */
+#sc-raid::after,#sc-eye::after{content:'';position:absolute;left:0;right:0;bottom:0;height:46%;
+  background:linear-gradient(to top,rgba(4,7,11,.94),rgba(4,7,11,0));pointer-events:none;z-index:1}
+#sc-raid .fig,#sc-raid .siren,#sc-raid .cc,
+#sc-eye .fig,#sc-eye .wheel,#sc-eye .whale,#sc-eye .birds,#sc-eye .cc{z-index:2}
+@media (prefers-reduced-motion: reduce){
+  .bgimg{transition:none}
+  .scene.active .bgimg{opacity:1;animation:none}
+}
 .sky{position:absolute;inset:0}
 .horizon-sea{position:absolute;left:-10%;right:-10%;bottom:0;height:38%;
   background:linear-gradient(180deg,var(--sea-2),var(--sea) 40%,var(--ink-2));}
@@ -578,6 +598,7 @@ button{cursor:pointer;font-family:inherit}
 
     <!-- 3 1944 空袭送信 -->
     <section class="scene" id="sc-raid">
+      <div class="bgimg"></div>
       <div class="sky"></div>
       <div class="beam b1"></div><div class="beam b2"></div>
       <div class="siren">1944 · 空 袭 警 报</div>
@@ -725,6 +746,7 @@ button{cursor:pointer;font-family:inherit}
 
     <!-- 13 台风眼（诀别） -->
     <section class="scene" id="sc-eye">
+      <div class="bgimg"></div>
       <div class="sky"></div>
       <div class="eyewall"></div><div class="eyewall2"></div><div class="goldbeam"></div>
       <div class="birds"></div>
