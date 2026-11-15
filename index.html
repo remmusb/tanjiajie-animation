@@ -69,6 +69,65 @@ button{cursor:pointer;font-family:inherit}
   .bgimg{transition:none}
   .scene.active .bgimg{opacity:1;animation:none}
 }
+/* ===== 全片照片化：各幕背景图 ===== */
+#sc-title .bgimg{background-image:url('assets/img/bg-title.jpg')}
+#sc-paris .bgimg{background-image:url('assets/img/bg-paris.jpg')}
+#sc-stele .bgimg{background-image:url('assets/img/bg-stele.jpg')}
+#sc-sister .bgimg{background-image:url('assets/img/bg-sister.jpg')}
+#sc-boat .bgimg{background-image:url('assets/img/bg-boat.jpg')}
+#sc-typhoon .bgimg{background-image:url('assets/img/bg-typhoon.jpg');filter:saturate(1.05) brightness(.95)}
+#sc-song .bgimg{background-image:url('assets/img/bg-song.jpg')}
+#sc-hospital .bgimg{background-image:url('assets/img/bg-hospital.jpg')}
+#sc-wedding .bgimg{background-image:url('assets/img/bg-wedding.jpg')}
+#sc-farewell .bgimg{background-image:url('assets/img/bg-farewell.jpg')}
+#sc-years .bgimg{background-image:url('assets/img/bg-years.jpg')}
+#sc-finale .bgimg{background-image:url('assets/img/bg-finale.jpg')}
+/* 照片接管后隐藏各幕手绘布景（保留人物与叙事道具） */
+#sc-title .sky,#sc-title .moon,#sc-title .horizon-sea,#sc-title .boat{display:none}
+#sc-paris .sky,#sc-paris .window,#sc-paris .counter,#sc-paris .lampglow,#sc-paris .sketchbook{display:none}
+#sc-stele .sky,#sc-stele .sun,#sc-stele .ground,#sc-stele .bunting,#sc-stele .pavilion{display:none}
+#sc-sister .sky,#sc-sister .moon,#sc-sister .shed{display:none}
+#sc-boat .sky,#sc-boat .moon,#sc-boat .horizon-sea,#sc-boat .pier,#sc-boat .boat{display:none}
+#sc-typhoon .sky,#sc-typhoon .horizon-sea,#sc-typhoon .boat,#sc-typhoon .rescue{display:none}
+#sc-song .sky,#sc-song .stars,#sc-song .moon,#sc-song .moonpath,#sc-song .horizon-sea,#sc-song .moonreflect,#sc-song .boat{display:none}
+#sc-hospital .sky,#sc-hospital .ground,#sc-hospital .building{display:none}
+#sc-wedding .sky,#sc-wedding .lanterns,#sc-wedding .horizon-sea,#sc-wedding .boat{display:none}
+#sc-farewell .sky,#sc-farewell .moon,#sc-farewell .posterwall,#sc-farewell .horizon-sea,#sc-farewell .boat{display:none}
+#sc-years .sky{display:none}
+#sc-finale .sky,#sc-finale .stars,#sc-finale .moon,#sc-finale .moonpath,#sc-finale .horizon-sea,#sc-finale .boat{display:none}
+/* 全片前景压暗，人物与道具浮在照片上 */
+.scene::after{content:'';position:absolute;left:0;right:0;bottom:0;height:44%;
+  background:linear-gradient(to top,rgba(4,7,11,.88),rgba(4,7,11,0));pointer-events:none;z-index:1}
+.scene .fig,.scene .cc,.scene .boatpic,.scene .whale,.scene .wheel,.scene .lantern,.scene .pcard,
+.scene .photo-frame,.scene .bigtitle,.scene .phone,.scene .phoneglow,.scene .endcard,.scene .siren,
+.scene .banner-red,.scene .hosp-slogan,.scene .pot,.scene .parcel,.scene .steam,.scene .limeline,
+.scene .blinklamp,.scene .gunflash,.scene .crystar,.scene .note,.scene .fish,.scene .jewel,
+.scene .rope,.scene .rescuer,.scene .rain,.scene .flash,.scene .birds,.scene .candle,.scene .bulb,
+.scene .spark,.scene .rescue{z-index:2}
+/* ===== 标准船「淑仪号」道具（同一艘木船贯穿全片） ===== */
+.boatpic{position:absolute;z-index:1;pointer-events:none;
+  filter:brightness(.78) sepia(.22) drop-shadow(0 8px 16px rgba(0,0,0,.55))}
+.scene.active .boatpic{animation:bob 5.5s ease-in-out infinite alternate}
+@keyframes bob{from{transform:translateY(0) rotate(-.5deg)}to{transform:translateY(-6px) rotate(.6deg)}}
+#sc-title .boatpic{width:20%;left:62%;bottom:36%;opacity:.85}
+#sc-boat .boatpic{width:54%;left:23%;bottom:15%}
+#sc-typhoon .boatpic{width:46%;left:27%;bottom:22%;
+  filter:brightness(.6) saturate(.55) hue-rotate(155deg) drop-shadow(0 8px 16px rgba(0,0,0,.6))}
+.scene.active #sc-typhoon .boatpic, #sc-typhoon .boatpic{animation-duration:2.8s}
+#sc-song .boatpic{width:52%;left:24%;bottom:11%}
+#sc-wedding .boatpic{width:48%;left:26%;bottom:13%}
+#sc-eye .boatpic{width:42%;left:29%;bottom:19%;
+  filter:brightness(.62) saturate(.55) hue-rotate(155deg) drop-shadow(0 8px 16px rgba(0,0,0,.6))}
+#sc-finale .boatpic{width:40%;left:30%;bottom:19%;filter:brightness(.6) sepia(.2)}
+/* ===== 对白字幕：楷体浮现于画面 ===== */
+#dialogue{position:absolute;left:50%;top:24%;transform:translate(-50%,0);z-index:30;
+  max-width:82%;text-align:center;pointer-events:none;
+  font-family:"Kaiti SC","STKaiti","KaiTi","楷体",serif;
+  font-size:clamp(19px,2.9vw,30px);line-height:1.9;letter-spacing:.12em;color:#f2e7cd;
+  text-shadow:0 2px 18px rgba(0,0,0,.9);
+  opacity:0;transition:opacity .7s ease,transform .7s ease}
+#dialogue.show{opacity:1;transform:translate(-50%,-8px)}
+#subtitle{font-family:"Songti SC","STSong","SimSun","Noto Serif CJK SC",serif;letter-spacing:.06em}
 .sky{position:absolute;inset:0}
 .horizon-sea{position:absolute;left:-10%;right:-10%;bottom:0;height:38%;
   background:linear-gradient(180deg,var(--sea-2),var(--sea) 40%,var(--ink-2));}
@@ -577,6 +636,8 @@ button{cursor:pointer;font-family:inherit}
 
     <!-- 1 片头 -->
     <section class="scene" id="sc-title">
+      <div class="bgimg"></div>
+      <img class="boatpic" src="assets/img/boat.png" alt="淑仪号">
       <div class="sky"></div><div class="moon"></div>
       <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
       <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
@@ -585,6 +646,7 @@ button{cursor:pointer;font-family:inherit}
 
     <!-- 2 巴黎电话（2020s） -->
     <section class="scene" id="sc-paris">
+      <div class="bgimg"></div>
       <div class="sky"></div>
       <div class="window">
         <div class="eiffel"><svg viewBox="0 0 60 90" width="100%"><path d="M30 4 L36 30 L46 86 L38 86 L33 62 L27 62 L22 86 L12 86 L24 30 Z M24 44 L36 44 M20 70 L40 70" stroke="#0d1420" stroke-width="2.6" fill="none"/></svg></div>
@@ -617,6 +679,7 @@ button{cursor:pointer;font-family:inherit}
 
     <!-- 4 1945 碑亭合影 -->
     <section class="scene" id="sc-stele">
+      <div class="bgimg"></div>
       <div class="sky"></div><div class="sun"></div><div class="ground"></div>
       <div class="bunting"></div>
       <div class="pavilion"><svg viewBox="0 0 120 110" width="100%">
@@ -643,6 +706,7 @@ button{cursor:pointer;font-family:inherit}
 
     <!-- 5 淑仪（1950s 初） -->
     <section class="scene" id="sc-sister">
+      <div class="bgimg"></div>
       <div class="sky"></div><div class="moon"></div>
       <div class="banner-red">庆 祝 市 运 会 大 捷</div>
       <div class="shed"><i class="crack c1"></i><i class="crack c2"></i><i class="crack c3"></i></div>
@@ -654,6 +718,8 @@ button{cursor:pointer;font-family:inherit}
 
     <!-- 6 上船·淑仪号 -->
     <section class="scene" id="sc-boat">
+      <div class="bgimg"></div>
+      <img class="boatpic" src="assets/img/boat.png" alt="淑仪号">
       <div class="sky"></div><div class="moon"></div>
       <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
       <div class="pier"></div>
@@ -667,6 +733,8 @@ button{cursor:pointer;font-family:inherit}
 
     <!-- 7 台风夜 -->
     <section class="scene" id="sc-typhoon">
+      <div class="bgimg"></div>
+      <img class="boatpic" src="assets/img/boat.png" alt="淑仪号">
       <div class="sky"></div>
       <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
       <div class="rain"></div><div class="flash stormy"></div>
@@ -682,6 +750,8 @@ button{cursor:pointer;font-family:inherit}
 
     <!-- 8 叹家姐（核心） -->
     <section class="scene" id="sc-song">
+      <div class="bgimg"></div>
+      <img class="boatpic" src="assets/img/boat.png" alt="淑仪号">
       <div class="sky"></div><div class="stars"></div><div class="moon"></div><div class="moonpath"></div>
       <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
       <div class="moonreflect"></div>
@@ -696,6 +766,7 @@ button{cursor:pointer;font-family:inherit}
 
     <!-- 9 麻风病院（1950s） -->
     <section class="scene" id="sc-hospital">
+      <div class="bgimg"></div>
       <div class="sky"></div><div class="ground"></div>
       <div class="building"><i class="win"></i><i class="win"></i><i class="win"></i><div class="redcross"></div></div>
       <div class="hosp-slogan">防 治 麻 风 · 人 人 有 责</div>
@@ -710,6 +781,8 @@ button{cursor:pointer;font-family:inherit}
 
     <!-- 10 水上婚礼 -->
     <section class="scene" id="sc-wedding">
+      <div class="bgimg"></div>
+      <img class="boatpic" src="assets/img/boat.png" alt="淑仪号">
       <div class="sky"></div>
       <div class="lanterns"><i></i><i></i><i></i><i></i><i></i></div>
       <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
@@ -722,6 +795,7 @@ button{cursor:pointer;font-family:inherit}
 
     <!-- 11 1966 送别 -->
     <section class="scene" id="sc-farewell">
+      <div class="bgimg"></div>
       <div class="sky"></div><div class="moon"></div>
       <div class="posterwall"><i></i><i></i><i></i></div>
       <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
@@ -736,6 +810,7 @@ button{cursor:pointer;font-family:inherit}
 
     <!-- 12 岁月蒙太奇 -->
     <section class="scene" id="sc-years">
+      <div class="bgimg"></div>
       <div class="sky"></div>
       <div class="pcard p1"><i class="pin"></i><div class="pbody pb-exam"><span class="pyear">1977</span></div></div>
       <div class="pcard p2"><i class="pin"></i><div class="pbody pb-debt"><span class="pyear">1993</span></div></div>
@@ -747,6 +822,7 @@ button{cursor:pointer;font-family:inherit}
     <!-- 13 台风眼（诀别） -->
     <section class="scene" id="sc-eye">
       <div class="bgimg"></div>
+      <img class="boatpic" src="assets/img/boat.png" alt="淑仪号">
       <div class="sky"></div>
       <div class="eyewall"></div><div class="eyewall2"></div><div class="goldbeam"></div>
       <div class="birds"></div>
@@ -761,6 +837,8 @@ button{cursor:pointer;font-family:inherit}
 
     <!-- 14 尾声 -->
     <section class="scene" id="sc-finale">
+      <div class="bgimg"></div>
+      <img class="boatpic" src="assets/img/boat.png" alt="淑仪号">
       <div class="sky"></div><div class="stars"></div><div class="moon"></div><div class="moonpath"></div>
       <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
       <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
@@ -773,6 +851,7 @@ button{cursor:pointer;font-family:inherit}
 
     <div class="grain"></div><div class="vignette"></div>
     <div class="letterbox top"></div><div class="letterbox bottom"></div>
+    <div id="dialogue"></div>
     <div id="subtitle"></div>
 
     <div id="start-overlay">

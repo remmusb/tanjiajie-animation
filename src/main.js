@@ -95,7 +95,7 @@ const scenes = [
 
 // ---------- DOM -------
 const $ = s => document.querySelector(s);
-const stage = $('#stage'), sub = $('#subtitle'), bar = $('#bar'), timeEl = $('#time'), dotsEl = $('#dots');
+const stage = $('#stage'), sub = $('#subtitle'), dlg = $('#dialogue'), bar = $('#bar'), timeEl = $('#time'), dotsEl = $('#dots');
 const btnPlay = $('#btn-play'), btnPrev = $('#btn-prev'), btnNext = $('#btn-next'), btnMute = $('#btn-mute');
 const overlay = $('#start-overlay');
 const ICO_PLAY = '<path d="M7 4l14 8-14 8z"/>', ICO_PAUSE = '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>';
@@ -129,7 +129,7 @@ function activate(idx) {
   document.getElementById(scenes[idx].id).classList.add('active');
   dots.forEach((d, i) => d.classList.toggle('on', i === idx));
   setSceneAudio(scenes[idx].id);
-  curIdx = idx; curSubKey = '__none__'; sub.classList.remove('show');
+  curIdx = idx; curSubKey = '__none__'; sub.classList.remove('show'); dlg.classList.remove('show');
 }
 
 function render() {
@@ -146,6 +146,7 @@ function render() {
   const key = idx + '|' + text;
   if (key !== curSubKey) {
     curSubKey = key;
+    sub.classList.remove('show'); dlg.classList.remove('show');
     if (text) {
       if (verse) {
         // 歌诗：逐字浮现（卡拉OK式）
@@ -153,12 +154,17 @@ function render() {
         const step = Math.min(0.17, (win * 0.5) / chars.length);
         sub.innerHTML = '<span class="verse">' + chars.map((c, i) =>
           `<i style="animation-delay:${(i * step).toFixed(2)}s">${c === ' ' ? '&nbsp;' : c}</i>`).join('') + '</span>';
+        sub.classList.add('show');
+      } else if (/“/.test(text)) {
+        // 对白：楷体，浮现于画面上方
+        dlg.textContent = text;
+        dlg.classList.add('show');
       } else {
+        // 叙述：底部宋体
         sub.textContent = text;
+        sub.classList.add('show');
       }
-      sub.classList.add('show');
     }
-    else sub.classList.remove('show');
   }
   bar.style.width = (pos / total * 100) + '%';
   timeEl.textContent = fmt(pos) + ' / ' + fmt(total);
@@ -207,25 +213,26 @@ document.addEventListener('keydown', e => {
 
 // ---------- 声音引擎（叹家姐挽歌 + 海浪为全片持续底声，各幕只加点缀） -------
 const AU = 'assets/audio/';
-// 每幕：sea/lament=底声目标音量；acc=循环点缀；fx=[秒, 名, 音量] 一次性音效
+// 每幕：sea=海浪音量；sing=[唱段文件,音量]（真实咸水歌闷化底声）；acc=循环点缀；fx=[秒,名,音量]
 const SCENE_AUDIO = {
-  'sc-title':    { sea: .5,  lament: .55 },
-  'sc-paris':    { sea: .22, lament: .5 },
-  'sc-raid':     { sea: .15, lament: .3,  acc: [['siren', .26]] },
-  'sc-stele':    { sea: .3,  lament: .42 },
-  'sc-sister':   { sea: .18, lament: .6 },
-  'sc-boat':     { sea: .5,  lament: .42 },
-  'sc-typhoon':  { sea: .3,  lament: .3,  acc: [['thunder', .55]] },
-  'sc-song':     { sea: .28, lament: .9 },
-  'sc-hospital': { sea: .18, lament: .45 },
-  'sc-wedding':  { sea: .32, lament: .15, acc: [['wedding', .45]] },
-  'sc-farewell': { sea: .28, lament: .5,  fx: [[13.2, 'baby', .4]] },
-  'sc-years':    { sea: .18, lament: .5 },
-  'sc-eye':      { sea: .32, lament: .7,  acc: [['thunder', .3]] },
-  'sc-finale':   { sea: .38, lament: .85 },
+  'sc-title':    { sea: .5,  sing: ['sing_a', .45] },
+  'sc-paris':    { sea: .2,  sing: ['sing_d', .45] },
+  'sc-raid':     { sea: .15, sing: ['sing_d', .3],  acc: [['siren', .26]] },
+  'sc-stele':    { sea: .3,  sing: ['sing_a', .38] },
+  'sc-sister':   { sea: .18, sing: ['sing_d', .5] },
+  'sc-boat':     { sea: .5,  sing: ['sing_a', .4] },
+  'sc-typhoon':  { sea: .3,  sing: ['sing_d', .28], acc: [['thunder', .55]] },
+  'sc-song':     { sea: .28, sing: ['sing_b', .85] },
+  'sc-hospital': { sea: .18, sing: ['sing_a', .38] },
+  'sc-wedding':  { sea: .32, sing: ['sing_a', .18], acc: [['wedding', .45]] },
+  'sc-farewell': { sea: .28, sing: ['sing_d', .5],  fx: [[13.2, 'baby', .4]] },
+  'sc-years':    { sea: .18, sing: ['sing_a', .42] },
+  'sc-eye':      { sea: .32, sing: ['sing_c', .7],  acc: [['thunder', .3]] },
+  'sc-finale':   { sea: .38, sing: ['sing_b', .75] },
 };
 let muted = false, audioOn = false;
-const bedEls = {};           // sea / lament：贯穿全片的持续底声
+const bedEls = {};           // sea：固定底声
+let singEl = null, singName = '';  // 当前咸水歌唱段
 let accEls = [], fxTimers = [];
 
 function mkAudio(name, loop) {
@@ -243,19 +250,27 @@ function fadeTo(a, v, ms, done) {
 }
 function startBed() {
   if (bedEls.sea) return;
-  ['sea', 'lament'].forEach(n => {
-    const a = mkAudio(n, true); a.volume = 0;
-    a.play().catch(() => {});
-    bedEls[n] = a;
-  });
+  const a = mkAudio('sea', true); a.volume = 0;
+  a.play().catch(() => {});
+  bedEls.sea = a;
 }
 function setSceneAudio(id) {
   if (!audioOn || muted) return;
   startBed();
-  Object.values(bedEls).forEach(a => { if (a.paused) a.play().catch(() => {}); });
+  if (bedEls.sea.paused) bedEls.sea.play().catch(() => {});
   const cfg = SCENE_AUDIO[id]; if (!cfg) return;
   fadeTo(bedEls.sea, cfg.sea != null ? cfg.sea : .3, 1500);
-  fadeTo(bedEls.lament, cfg.lament != null ? cfg.lament : .5, 1500);
+  // 咸水歌唱段：换段则交叉淡入淡出
+  const [sName, sVol] = cfg.sing || [null, 0];
+  if (sName && sName !== singName) {
+    if (singEl) fadeTo(singEl, 0, 1200);
+    singEl = mkAudio(sName, true); singName = sName;
+    singEl.volume = 0; singEl.play().catch(() => {});
+  }
+  if (singEl) {
+    if (singEl.paused) singEl.play().catch(() => {});
+    fadeTo(singEl, sVol, 1500);
+  }
   // 换幕：淡出旧点缀，淡入新点缀
   accEls.forEach(a => fadeTo(a, 0, 600));
   accEls = [];
@@ -274,6 +289,7 @@ function setSceneAudio(id) {
 }
 function pauseAllAudio() {
   Object.values(bedEls).forEach(a => a.pause());
+  if (singEl) singEl.pause();
   accEls.forEach(a => a.pause());
   fxTimers.forEach(clearTimeout); fxTimers = [];
 }
