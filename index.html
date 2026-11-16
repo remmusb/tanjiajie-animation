@@ -83,7 +83,7 @@ button{cursor:pointer;font-family:inherit}
 #sc-1977 .bgimg{background-image:url('assets/img/bg-1977.jpg')}
 #sc-repair .bgimg{background-image:url('assets/img/bg-repair.jpg')}
 #sc-reunion .bgimg{background-image:url('assets/img/bg-reunion.jpg')}
-#sc-1993 .bgimg{background-image:url('assets/img/bg-years.jpg');filter:saturate(.7) brightness(.66)}
+#sc-1993 .bgimg{background-image:url('assets/img/bg-1993.jpg')}
 #sc-1997 .bgimg{background-image:url('assets/img/bg-1997.jpg')}
 #sc-1998 .bgimg{background-image:url('assets/img/bg-1998.jpg')}
 #sc-finale .bgimg{background-image:url('assets/img/bg-finale.jpg')}
@@ -121,9 +121,9 @@ button{cursor:pointer;font-family:inherit}
 .scene.active #sc-typhoon .boatpic, #sc-typhoon .boatpic{animation-duration:2.8s}
 #sc-song .boatpic{width:52%;left:24%;bottom:11%}
 #sc-wedding .boatpic{width:48%;left:26%;bottom:13%}
-#sc-eye .boatpic{width:42%;left:29%;bottom:19%;
+#sc-eye .boatpic{width:44%;left:28%;bottom:19%;
   filter:brightness(.62) saturate(.55) hue-rotate(155deg) drop-shadow(0 8px 16px rgba(0,0,0,.6))}
-#sc-finale .boatpic{width:40%;left:30%;bottom:19%;filter:brightness(.6) sepia(.2)}
+#sc-finale .boatpic{width:42%;left:29%;bottom:19%;filter:brightness(.6) sepia(.2)}
 /* ===== 对白字幕：楷体浮现于画面 ===== */
 #dialogue{position:absolute;left:50%;top:24%;transform:translate(-50%,0);z-index:30;
   max-width:82%;text-align:center;pointer-events:none;
@@ -561,7 +561,7 @@ button{cursor:pointer;font-family:inherit}
 .fig-oldr{left:42%;bottom:16%;width:4.8%}
 .fig-oldr2{left:48.5%;bottom:16%;width:4.6%}
 #sc-repair .boatpic{width:50%;left:28%;bottom:14%}
-#sc-reunion .boatpic{width:46%;left:32%;bottom:15%}
+#sc-reunion .boatpic{width:40%;left:5%;bottom:16%}
 
 /* 自检模式：直接呈现动画终态（仅 ?auto=1 截图用） */
 html.shot *{animation:none!important;transition:none!important}
@@ -757,7 +757,6 @@ html.shot .scene.active .bgimg{opacity:1}
     <section class="scene" id="sc-sister">
       <div class="bgimg"></div>
       <div class="sky"></div><div class="moon"></div>
-      <div class="banner-red">庆 祝 市 运 会 大 捷</div>
       <div class="shed"><i class="crack c1"></i><i class="crack c2"></i><i class="crack c3"></i></div>
       <div class="candle"></div>
       <div class="cc"><div class="no">家姐 · 淑仪</div><div class="t">能救人呀</div></div>
@@ -787,7 +786,6 @@ html.shot .scene.active .bgimg{opacity:1}
       <div class="fish f2"><svg viewBox="0 0 40 20"><path class="fishbody" d="M2 12 Q14 2 30 10 L38 4 L36 12 L38 20 L30 14 Q14 22 2 12 Z"/></svg></div>
       <div class="fish f3"><svg viewBox="0 0 40 20"><path class="fishbody" d="M2 12 Q14 2 30 10 L38 4 L36 12 L38 20 L30 14 Q14 22 2 12 Z"/></svg></div>
       <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
-      <div class="rope"></div>
       <div class="rescue"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
       <div class="cc"><div class="no">台风夜</div><div class="t">鱼起水，台风嘴</div></div>
     </section>
@@ -811,18 +809,12 @@ html.shot .scene.active .bgimg{opacity:1}
       <div class="bgimg"></div>
       <div class="sky"></div><div class="ground"></div>
       <div class="building"><i class="win"></i><i class="win"></i><i class="win"></i><div class="redcross"></div></div>
-      <div class="hosp-slogan">防 治 麻 风 · 人 人 有 责</div>
-      <div class="limeline"></div>
-      <div class="parcel"><svg viewBox="0 0 40 30" width="100%"><rect x="2" y="4" width="36" height="24" rx="4" fill="#8a7a5a"/><path d="M2 12 L38 12" stroke="#6a5c42" stroke-width="2"/></svg></div>
-      <div class="pot"><svg viewBox="0 0 60 50" width="100%"><ellipse cx="30" cy="42" rx="26" ry="7" fill="#22303c"/><path d="M6 40 Q6 14 30 14 Q54 14 54 40 Z" fill="#31424f"/><rect x="24" y="6" width="12" height="9" rx="3" fill="#22303c"/></svg></div>
-      <div class="steam"></div>
       <div class="cc"><div class="no">1950s · 麻风病院</div><div class="t">隔着石灰线的牛郎织女</div></div>
     </section>
 
     <!-- 10 水上婚礼 -->
     <section class="scene" id="sc-wedding">
       <div class="bgimg"></div>
-      <img class="boatpic" src="assets/img/boat.png" alt="淑仪号">
       <div class="sky"></div>
       <div class="lanterns"><i></i><i></i><i></i><i></i><i></i></div>
       <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
@@ -838,7 +830,6 @@ html.shot .scene.active .bgimg{opacity:1}
       <div class="posterwall"><i></i><i></i><i></i></div>
       <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
       <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
-      <i class="blinklamp onboat"></i><i class="blinklamp onshore"></i>
       <i class="gunflash g1"></i><i class="gunflash g2"></i>
       <i class="crystar"></i>
       <div class="cc"><div class="no">1966 · 送别</div><div class="t">煤油灯闪了两下</div></div>
@@ -854,14 +845,13 @@ html.shot .scene.active .bgimg{opacity:1}
     <!-- 1986 大修淑仪号 -->
     <section class="scene" id="sc-repair">
       <div class="bgimg"></div>
-      <img class="boatpic" src="assets/img/boat.png" alt="淑仪号">
       <div class="cc"><div class="no">1986 · 大修</div><div class="t">重新题上船名</div></div>
     </section>
 
     <!-- 九十年代 重逢 -->
     <section class="scene" id="sc-reunion">
       <div class="bgimg"></div>
-      <img class="boatpic" src="assets/img/boat.png" alt="淑仪号">
+      <img class="boatpic" src="assets/img/boat2.png" alt="淑仪号（修复后）">
       <div class="cc"><div class="no">九十年代 · 重逢</div><div class="t">眼睛重新亮了起来</div></div>
     </section>
 
@@ -888,13 +878,12 @@ html.shot .scene.active .bgimg{opacity:1}
     <!-- 13 台风眼（诀别） -->
     <section class="scene" id="sc-eye">
       <div class="bgimg"></div>
-      <img class="boatpic" src="assets/img/boat.png" alt="淑仪号">
+      <img class="boatpic" src="assets/img/boat2.png" alt="淑仪号（修复后）">
       <div class="sky"></div>
       <div class="eyewall"></div><div class="eyewall2"></div><div class="goldbeam"></div>
       <div class="birds"></div>
       <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
       <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
-      <img class="wheelimg" src="assets/img/prop-wheel.png" alt="舵轮">
       <img class="whaleimg" src="assets/img/prop-whale.png" alt="宝螺小鲸鱼">
       <div class="cc"><div class="no">第四幕 · 台风眼</div><div class="t">顺风顺水</div></div>
     </section>
@@ -902,7 +891,7 @@ html.shot .scene.active .bgimg{opacity:1}
     <!-- 14 尾声 -->
     <section class="scene" id="sc-finale">
       <div class="bgimg"></div>
-      <img class="boatpic" src="assets/img/boat.png" alt="淑仪号">
+      <img class="boatpic" src="assets/img/boat2.png" alt="淑仪号（修复后）">
       <div class="sky"></div><div class="stars"></div><div class="moon"></div><div class="moonpath"></div>
       <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
       <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
