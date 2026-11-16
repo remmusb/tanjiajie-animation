@@ -288,7 +288,7 @@ const LOOPS = ['sea', 'sing_a', 'sing_b', 'sing_c', 'sing_d', 'siren', 'thunder'
 const SCENE_AUDIO = {
   'sc-title':    { v: { sea: .5,  sing_a: .45 } },
   'ep1':         { v: { sea: .35, sing_a: .3 } },
-  'sc-paris':    { v: { sea: .12, sing_d: .35, tvmur: .3 }, fx: [[1.2, 'phonering', .5, 6.0]] },
+  'sc-paris':    { v: { sea: .12, sing_d: .35 }, fx: [[1.2, 'phonering', .5, 6.0]] },
   'sc-raid':     { v: { sea: .15, sing_d: .25, siren: .26 } },
   'sc-stele':    { v: { sea: .3,  sing_a: .38 }, fx: [[5.2, 'shutter', .5]] },
   'ep2':         { v: { sea: .3,  sing_d: .3 } },

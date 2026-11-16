@@ -170,8 +170,8 @@ button{cursor:pointer;font-family:inherit}
 .rname{font-family:"Kaiti SC","STKaiti","KaiTi",serif;font-size:10px;fill:oklch(0.92 0.03 90);letter-spacing:1px}
 .flagred{fill:var(--red)}
 
-/* ===== 人形剪影 ===== */
-.fig{position:absolute;z-index:9}
+/* ===== 人形剪影（压暗+柔焦，融入写实照片的阴影区） ===== */
+.fig{position:absolute;z-index:9;filter:brightness(.5) blur(.9px);opacity:.95}
 .fig svg{width:100%;display:block;overflow:visible}
 .sk-girl{fill:#0c1522}      /* 小淑珍：双辫 */
 .sk-boy{fill:#0e1826}
@@ -871,7 +871,6 @@ html.shot .scene.active .bgimg{opacity:1}
     <section class="scene" id="sc-repair">
       <div class="bgimg"></div>
       <img class="boatpic" src="assets/img/boat.png" alt="淑仪号">
-      <div class="fig fig-repair"><svg viewBox="0 0 60 120"><use href="#sym-woman" fill="#0e1826"/></svg></div>
       <div class="cc"><div class="no">1986 · 大修</div><div class="t">重新题上船名</div></div>
     </section>
 
