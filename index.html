@@ -80,7 +80,12 @@ button{cursor:pointer;font-family:inherit}
 #sc-hospital .bgimg{background-image:url('assets/img/bg-hospital.jpg')}
 #sc-wedding .bgimg{background-image:url('assets/img/bg-wedding.jpg')}
 #sc-farewell .bgimg{background-image:url('assets/img/bg-farewell.jpg')}
-#sc-years .bgimg{background-image:url('assets/img/bg-years.jpg')}
+#sc-1977 .bgimg{background-image:url('assets/img/bg-1977.jpg')}
+#sc-repair .bgimg{background-image:url('assets/img/bg-repair.jpg')}
+#sc-reunion .bgimg{background-image:url('assets/img/bg-reunion.jpg')}
+#sc-1993 .bgimg{background-image:url('assets/img/bg-years.jpg');filter:saturate(.7) brightness(.66)}
+#sc-1997 .bgimg{background-image:url('assets/img/bg-1997.jpg')}
+#sc-1998 .bgimg{background-image:url('assets/img/bg-1998.jpg')}
 #sc-finale .bgimg{background-image:url('assets/img/bg-finale.jpg')}
 /* 照片接管后隐藏各幕手绘布景（保留人物与叙事道具） */
 #sc-title .sky,#sc-title .moon,#sc-title .horizon-sea,#sc-title .boat{display:none}
@@ -93,7 +98,6 @@ button{cursor:pointer;font-family:inherit}
 #sc-hospital .sky,#sc-hospital .ground,#sc-hospital .building{display:none}
 #sc-wedding .sky,#sc-wedding .lanterns,#sc-wedding .horizon-sea,#sc-wedding .boat{display:none}
 #sc-farewell .sky,#sc-farewell .moon,#sc-farewell .posterwall,#sc-farewell .horizon-sea,#sc-farewell .boat{display:none}
-#sc-years .sky{display:none}
 #sc-finale .sky,#sc-finale .stars,#sc-finale .moon,#sc-finale .moonpath,#sc-finale .horizon-sea,#sc-finale .boat{display:none}
 /* 全片前景压暗，人物与道具浮在照片上 */
 .scene::after{content:'';position:absolute;left:0;right:0;bottom:0;height:44%;
@@ -103,7 +107,8 @@ button{cursor:pointer;font-family:inherit}
 .scene .banner-red,.scene .hosp-slogan,.scene .pot,.scene .parcel,.scene .steam,.scene .limeline,
 .scene .blinklamp,.scene .gunflash,.scene .crystar,.scene .note,.scene .fish,.scene .jewel,
 .scene .rope,.scene .rescuer,.scene .rain,.scene .flash,.scene .birds,.scene .candle,.scene .bulb,
-.scene .spark,.scene .rescue{z-index:2}
+.scene .spark,.scene .rescue,.scene .propimg,.scene .whaleimg,.scene .wheelimg,.scene .phoneimg,
+.scene .epno,.scene .epname{z-index:2}
 /* ===== 标准船「淑仪号」道具（同一艘木船贯穿全片） ===== */
 .boatpic{position:absolute;z-index:1;pointer-events:none;
   filter:brightness(.78) sepia(.22) drop-shadow(0 8px 16px rgba(0,0,0,.55))}
@@ -123,7 +128,7 @@ button{cursor:pointer;font-family:inherit}
 #dialogue{position:absolute;left:50%;top:24%;transform:translate(-50%,0);z-index:30;
   max-width:82%;text-align:center;pointer-events:none;
   font-family:"Kaiti SC","STKaiti","KaiTi","楷体",serif;
-  font-size:clamp(19px,2.9vw,30px);line-height:1.9;letter-spacing:.12em;color:#f2e7cd;
+  font-size:clamp(19px,2.9vw,30px);line-height:1.9;letter-spacing:.12em;color:#f2e7cd;font-weight:700;
   text-shadow:0 2px 18px rgba(0,0,0,.9);
   opacity:0;transition:opacity .7s ease,transform .7s ease}
 #dialogue.show{opacity:1;transform:translate(-50%,-8px)}
@@ -511,6 +516,61 @@ button{cursor:pointer;font-family:inherit}
 .endcard h2{font-family:"Kaiti SC","STKaiti","KaiTi",serif;font-size:clamp(30px,5vw,60px);letter-spacing:.4em;text-indent:.4em;color:var(--paper)}
 .endcard p{font-size:clamp(12px,1.4vw,16px);letter-spacing:.3em;color:var(--paper-dim)}
 
+/* ===== 集名卡：竖排对句 ===== */
+.epcard{display:flex;align-items:center;justify-content:center;gap:5%;
+  background:radial-gradient(ellipse at 50% 40%,oklch(0.2 0.045 228),oklch(0.11 0.025 235) 78%)}
+.epcard::after{display:none}
+.epno{writing-mode:vertical-rl;font-size:clamp(13px,1.7vw,20px);letter-spacing:.55em;
+  color:var(--amber);border:1px solid oklch(0.78 0.13 80/.45);padding:.8em .4em;
+  font-family:"Kaiti SC","STKaiti","KaiTi",serif;opacity:0}
+.epname{writing-mode:vertical-rl;
+  font-family:"Kaiti SC","STKaiti","KaiTi",serif;font-size:clamp(24px,3.6vw,44px);
+  letter-spacing:.2em;color:var(--paper);text-shadow:0 3px 24px rgba(0,0,0,.85);opacity:0}
+.epname span{display:block;margin-left:.7em}
+.scene.active .epno{animation:fadeUp 2.4s .3s ease both}
+.scene.active .epname{animation:fadeUp 2.8s .9s ease both}
+
+/* ===== 写实道具贴图（与照片背景同风格） ===== */
+.propimg,.whaleimg,.wheelimg,.phoneimg{position:absolute;z-index:3;pointer-events:none}
+.propimg{filter:drop-shadow(0 14px 30px rgba(0,0,0,.6));opacity:0}
+.scene.active .propimg{animation:propIn 2.6s .8s ease forwards}
+@keyframes propIn{from{opacity:0;transform:translateY(16px) rotate(-2deg)}to{opacity:1;transform:none}}
+#sc-1977 .propimg{width:30%;left:35%;bottom:16%}
+#sc-1993 .propimg{width:30%;left:35%;bottom:14%}
+#sc-1998 .propimg{width:24%;left:57%;bottom:13%}
+.whaleimg{width:6%;opacity:0;filter:drop-shadow(0 4px 10px rgba(0,0,0,.5))}
+.scene.active .whaleimg{animation:whaleIn 3s 12s ease forwards}
+#sc-boat .whaleimg{left:52%;bottom:44%}
+#sc-eye .whaleimg{left:50.5%;bottom:52%;width:5%}
+.scene.active #sc-eye .whaleimg{animation:whaleGift 5s 12s ease forwards}
+.wheelimg{left:73%;bottom:20%;width:11%;opacity:.95;
+  filter:brightness(.85) sepia(.15) drop-shadow(0 6px 14px rgba(0,0,0,.5))}
+.scene.active .wheelimg{animation:wheelTurn 6s 19s ease forwards}
+.phoneimg{width:7%;filter:drop-shadow(0 6px 14px rgba(0,0,0,.55))}
+.scene.active .phoneimg{animation:ring 1.1s ease-in-out infinite}
+#sc-paris .phoneimg{right:34%;bottom:26%}
+#sc-finale .phoneimg{right:13%;bottom:12%;width:8%}
+
+/* 隐藏纯装饰光点（反馈：意义不明） */
+.note,.spark,.crystar{display:none!important}
+
+/* 年代新幕人物站位 */
+.fig-exam{left:30%;bottom:14%;width:5.2%}
+.fig-exam2{left:38%;bottom:14%;width:4.6%}
+.fig-repair{left:20%;bottom:16%;width:5.6%}
+.fig-oldr{left:42%;bottom:16%;width:4.8%}
+.fig-oldr2{left:48.5%;bottom:16%;width:4.6%}
+#sc-repair .boatpic{width:50%;left:28%;bottom:14%}
+#sc-reunion .boatpic{width:46%;left:32%;bottom:15%}
+
+/* 自检模式：直接呈现动画终态（仅 ?auto=1 截图用） */
+html.shot *{animation:none!important;transition:none!important}
+html.shot .cc,html.shot .epno,html.shot .epname,html.shot .propimg,html.shot .photo-frame,
+html.shot .endcard,html.shot .bigtitle h1,html.shot .bigtitle p{opacity:1!important}
+html.shot .photo-frame{transform:translate(-50%,-50%) rotate(-2deg)}
+html.shot .whaleimg{opacity:1}
+html.shot .scene.active .bgimg{opacity:1}
+
 /* ===== 控制条 ===== */
 .controls{display:flex;align-items:center;gap:10px;width:100%;max-width:1120px;margin:12px auto 0;
   padding:8px 12px;background:oklch(0.16 0.025 235);border-radius:8px;flex-wrap:wrap}
@@ -654,7 +714,7 @@ button{cursor:pointer;font-family:inherit}
       </div>
       <div class="counter"></div><div class="lampglow"></div>
       <div class="sketchbook"></div>
-      <div class="phoneglow"></div><div class="phone"></div>
+      <div class="phoneglow"></div><img class="phoneimg" src="assets/img/prop-phone.png" alt="手机">
       <div class="cc"><div class="no">第一幕 · 远方</div><div class="t">外婆被那条船吃了</div></div>
     </section>
 
@@ -689,16 +749,8 @@ button{cursor:pointer;font-family:inherit}
         <text class="pv-text" x="60" y="58" text-anchor="middle" writing-mode="tb">胜利纪念</text>
       </svg></div>
       <div class="photo-frame"><div class="photo-inner">
-        <svg viewBox="0 0 200 150" width="100%" height="100%">
-          <rect x="70" y="18" width="60" height="46" fill="#8a7a5e"/>
-          <path d="M62 18 Q100 -6 138 18 L130 25 Q100 7 70 25 Z" fill="#6a5c42"/>
-          <circle class="ph-man" cx="84" cy="90" r="11"/><path class="ph-man" d="M84 101 L72 148 L96 148 Z"/>
-          <circle class="ph-girl" cx="122" cy="104" r="8"/>
-          <path class="ph-girl" d="M113 102 Q106 96 108 88 L112 90 Q111 95 116 98 Z"/>
-          <path class="ph-girl" d="M131 102 Q138 96 136 88 L132 88 Q133 95 128 98 Z"/>
-          <path class="ph-girl" d="M122 112 L113 148 L131 148 Z"/>
-        </svg>
-        <div class="ph-cap">1946 · 与细女淑珍</div>
+        <img src="assets/img/prop-photo45.png" alt="1945年碑亭合影" style="width:100%;height:100%;object-fit:cover">
+        <div class="ph-cap">1945 · 与细女淑珍</div>
       </div></div>
       <div class="bulb"></div>
       <div class="cc"><div class="no">1945 · 碑亭</div><div class="t">一颗小石子</div></div>
@@ -727,7 +779,7 @@ button{cursor:pointer;font-family:inherit}
       <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
       <div class="fig fig-moon6"><svg viewBox="0 0 60 120"><use href="#sym-woman" fill="#101a29"/></svg></div>
       <div class="fig fig-girl6"><svg viewBox="0 0 60 120"><use href="#sym-girl" fill="#0c1522"/></svg></div>
-      <div class="whale"><svg viewBox="0 0 60 40"><use href="#sym-whale"/></svg></div>
+      <img class="whaleimg" src="assets/img/prop-whale.png" alt="宝螺小鲸鱼">
       <div class="cc"><div class="no">第二幕 · 上船</div><div class="t">淑仪号</div></div>
     </section>
 
@@ -808,15 +860,47 @@ button{cursor:pointer;font-family:inherit}
       <div class="cc"><div class="no">1966 · 送别</div><div class="t">煤油灯闪了两下</div></div>
     </section>
 
-    <!-- 12 岁月蒙太奇 -->
-    <section class="scene" id="sc-years">
+    <!-- 1977 恢复高考 -->
+    <section class="scene" id="sc-1977">
       <div class="bgimg"></div>
-      <div class="sky"></div>
-      <div class="pcard p1"><i class="pin"></i><div class="pbody pb-exam"><span class="pyear">1977</span></div></div>
-      <div class="pcard p2"><i class="pin"></i><div class="pbody pb-debt"><span class="pyear">1993</span></div></div>
-      <div class="pcard p3"><i class="pin"></i><div class="pbody pb-ash"><span class="pyear">1998</span></div></div>
-      <div class="pcard p4"><i class="pin"></i><div class="pbody pb-tv"><i class="screen"></i><i class="flagrise"></i><span class="pyear" style="color:#cfc4a8">1997.7.1</span></div></div>
-      <div class="cc"><div class="no">第三幕 · 岁月</div><div class="t">浪潮里沉沉浮浮</div></div>
+      <img class="propimg" src="assets/img/prop-doc77.png" alt="1977年准考证">
+      <div class="cc"><div class="no">1977 · 恢复高考</div><div class="t">一盏灯，两代人</div></div>
+    </section>
+
+    <!-- 1986 大修淑仪号 -->
+    <section class="scene" id="sc-repair">
+      <div class="bgimg"></div>
+      <img class="boatpic" src="assets/img/boat.png" alt="淑仪号">
+      <div class="fig fig-repair"><svg viewBox="0 0 60 120"><use href="#sym-woman" fill="#0e1826"/></svg></div>
+      <div class="cc"><div class="no">1986 · 大修</div><div class="t">重新题上船名</div></div>
+    </section>
+
+    <!-- 九十年代 重逢 -->
+    <section class="scene" id="sc-reunion">
+      <div class="bgimg"></div>
+      <img class="boatpic" src="assets/img/boat.png" alt="淑仪号">
+      <div class="cc"><div class="no">九十年代 · 重逢</div><div class="t">眼睛重新亮了起来</div></div>
+    </section>
+
+    <!-- 1993 欠债 -->
+    <section class="scene" id="sc-1993">
+      <div class="bgimg"></div>
+      <img class="propimg" src="assets/img/prop-doc93.png" alt="欠条">
+      <div class="cc"><div class="no">1993 · 欠债</div><div class="t">十一万五</div></div>
+    </section>
+
+    <!-- 1997 回归夜 -->
+    <section class="scene" id="sc-1997">
+      <div class="bgimg"></div>
+      <div class="fig fig-exam"><svg viewBox="0 0 60 120"><use href="#sym-man" fill="#0d1420"/></svg></div>
+      <div class="cc"><div class="no">1997 · 回归夜</div><div class="t">看完直播的那一夜</div></div>
+    </section>
+
+    <!-- 1998 除夕结清 -->
+    <section class="scene" id="sc-1998">
+      <div class="bgimg"></div>
+      <img class="propimg" src="assets/img/prop-doc98.png" alt="船契">
+      <div class="cc"><div class="no">1998 · 除夕</div><div class="t">调转船头的底气</div></div>
     </section>
 
     <!-- 13 台风眼（诀别） -->
@@ -830,8 +914,8 @@ button{cursor:pointer;font-family:inherit}
       <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
       <div class="fig fig-gran"><svg viewBox="0 0 64 120" class="rim"><use href="#sym-old" fill="#0e1a26"/></svg></div>
       <div class="fig fig-wuyue"><svg viewBox="0 0 60 120"><use href="#sym-girl" fill="#0c1522"/></svg></div>
-      <div class="wheel"><svg viewBox="0 0 100 100"><use href="#sym-wheel"/></svg></div>
-      <div class="whale"><svg viewBox="0 0 60 40"><use href="#sym-whale"/></svg></div>
+      <img class="wheelimg" src="assets/img/prop-wheel.png" alt="舵轮">
+      <img class="whaleimg" src="assets/img/prop-whale.png" alt="宝螺小鲸鱼">
       <div class="cc"><div class="no">第四幕 · 台风眼</div><div class="t">顺风顺水</div></div>
     </section>
 
@@ -844,7 +928,7 @@ button{cursor:pointer;font-family:inherit}
       <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
       <div class="fig fig-oldtwo"><svg viewBox="0 0 64 120"><use href="#sym-old" fill="#101c28"/></svg></div>
       <div class="fig fig-oldtwo2"><svg viewBox="0 0 64 120"><use href="#sym-old" fill="#121e2c"/></svg></div>
-      <div class="phoneglow"></div><div class="phone"></div>
+      <div class="phoneglow"></div><img class="phoneimg" src="assets/img/prop-phone.png" alt="手机">
       <div class="endcard"><h2>剧 终</h2><p>献给每一位撑起一个家的家姐</p></div>
       <div class="cc"><div class="no">尾声 · 老伴</div><div class="t">循着月影就归家</div></div>
     </section>
@@ -856,7 +940,7 @@ button{cursor:pointer;font-family:inherit}
 
     <div id="start-overlay">
       <button id="btn-start">开始放映</button>
-      <p>《叹家姐》· 约 4 分半 · 建议开启声音</p>
+      <p>《叹家姐》· 十集 · 约 6 分半 · 建议开启声音</p>
     </div>
   </div>
 
