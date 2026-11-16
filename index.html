@@ -128,7 +128,7 @@ button{cursor:pointer;font-family:inherit}
 #dialogue{position:absolute;left:50%;top:24%;transform:translate(-50%,0);z-index:30;
   max-width:82%;text-align:center;pointer-events:none;
   font-family:"Kaiti SC","STKaiti","KaiTi","楷体",serif;
-  font-size:clamp(19px,2.9vw,30px);line-height:1.9;letter-spacing:.12em;color:#f2e7cd;font-weight:700;
+  font-size:clamp(15px,2.1vw,23px);line-height:1.85;letter-spacing:.08em;color:#f2e7cd;font-weight:700;
   text-shadow:0 2px 18px rgba(0,0,0,.9);
   opacity:0;transition:opacity .7s ease,transform .7s ease}
 #dialogue.show{opacity:1;transform:translate(-50%,-8px)}
@@ -197,14 +197,14 @@ button{cursor:pointer;font-family:inherit}
 .cc{position:absolute;left:6%;top:16%;z-index:20;opacity:0;pointer-events:none}
 .scene.active .cc{animation:ccIn 4.4s ease forwards}
 .cc .no{font-size:clamp(11px,1.3vw,14px);letter-spacing:.45em;color:var(--amber);margin-bottom:.5em}
-.cc .t{font-size:clamp(22px,3.6vw,44px);font-family:"Kaiti SC","STKaiti","KaiTi",serif;letter-spacing:.12em;color:var(--paper)}
+.cc .t{font-size:clamp(17px,2.6vw,32px);font-family:"Kaiti SC","STKaiti","KaiTi",serif;letter-spacing:.12em;color:var(--paper)}
 .cc .t::after{content:"";display:block;width:2.2em;height:1px;background:var(--amber);margin-top:.5em;opacity:.7}
 @keyframes ccIn{0%{opacity:0;transform:translateY(14px)}10%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
 
 /* 字幕 */
 #subtitle{position:absolute;left:50%;bottom:9%;transform:translateX(-50%);z-index:45;
   width:min(88%,72ch);text-align:center;pointer-events:none;
-  font-size:clamp(15px,2vw,24px);line-height:1.8;letter-spacing:.06em;
+  font-size:clamp(13px,1.6vw,19px);line-height:1.75;letter-spacing:.05em;
   color:var(--paper);text-shadow:0 2px 14px #000,0 0 4px #000;
   opacity:0;transition:opacity .5s ease;}
 #subtitle.show{opacity:1}
@@ -520,12 +520,12 @@ button{cursor:pointer;font-family:inherit}
 .epcard{display:flex;align-items:center;justify-content:center;gap:5%;
   background:radial-gradient(ellipse at 50% 40%,oklch(0.2 0.045 228),oklch(0.11 0.025 235) 78%)}
 .epcard::after{display:none}
-.epno{writing-mode:vertical-rl;font-size:clamp(13px,1.7vw,20px);letter-spacing:.55em;
+.epno{writing-mode:vertical-rl;font-size:clamp(10px,1.2vw,14px);letter-spacing:.45em;
   color:var(--amber);border:1px solid oklch(0.78 0.13 80/.45);padding:.8em .4em;
   font-family:"Kaiti SC","STKaiti","KaiTi",serif;opacity:0}
-.epname{writing-mode:vertical-rl;
-  font-family:"Kaiti SC","STKaiti","KaiTi",serif;font-size:clamp(24px,3.6vw,44px);
-  letter-spacing:.2em;color:var(--paper);text-shadow:0 3px 24px rgba(0,0,0,.85);opacity:0}
+.epname{writing-mode:vertical-rl;max-height:72%;
+  font-family:"Kaiti SC","STKaiti","KaiTi",serif;font-size:clamp(16px,2.4vw,28px);
+  letter-spacing:.14em;color:var(--paper);text-shadow:0 3px 24px rgba(0,0,0,.85);opacity:0}
 .epname span{display:block;margin-left:.7em}
 .scene.active .epno{animation:fadeUp 2.4s .3s ease both}
 .scene.active .epname{animation:fadeUp 2.8s .9s ease both}
@@ -731,9 +731,6 @@ html.shot .scene.active .bgimg{opacity:1}
         <div class="bld" style="left:88%;width:12%;height:60%"><i></i></div>
       </div>
       <div class="tree"><svg viewBox="0 0 100 160" width="100%"><path d="M46 160 L50 70 L30 30 L48 52 L58 18 L62 54 L82 34 L64 72 L68 160 Z" fill="#0a0f16"/><ellipse cx="52" cy="26" rx="34" ry="20" fill="#0d141d"/></svg></div>
-      <div class="fig fig-raidgirl"><svg viewBox="0 0 60 120" class="rim-cold"><use href="#sym-girl" class="sk-girl" fill="#0c1522"/></svg></div>
-      <div class="fig fig-raidmom"><svg viewBox="0 0 60 120"><use href="#sym-woman" fill="#101a29"/></svg></div>
-      <div class="fig fig-raidman"><svg viewBox="0 0 60 120"><use href="#sym-man" fill="#0d1420"/></svg></div>
       <div class="cc"><div class="no">1944 · 口信</div><div class="t">就是妹仔才没人疑</div></div>
     </section>
 
@@ -762,8 +759,6 @@ html.shot .scene.active .bgimg{opacity:1}
       <div class="sky"></div><div class="moon"></div>
       <div class="banner-red">庆 祝 市 运 会 大 捷</div>
       <div class="shed"><i class="crack c1"></i><i class="crack c2"></i><i class="crack c3"></i></div>
-      <div class="fig fig-runner"><svg viewBox="0 0 70 120"><use href="#sym-runner" fill="#0c1522"/></svg></div>
-      <div class="fig shedfig"><svg viewBox="0 0 60 120"><use href="#sym-girl"/></svg></div>
       <div class="candle"></div>
       <div class="cc"><div class="no">家姐 · 淑仪</div><div class="t">能救人呀</div></div>
     </section>
@@ -777,8 +772,6 @@ html.shot .scene.active .bgimg{opacity:1}
       <div class="pier"></div>
       <i class="jewel j1"></i><i class="jewel j2"></i><i class="jewel j3"></i>
       <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
-      <div class="fig fig-moon6"><svg viewBox="0 0 60 120"><use href="#sym-woman" fill="#101a29"/></svg></div>
-      <div class="fig fig-girl6"><svg viewBox="0 0 60 120"><use href="#sym-girl" fill="#0c1522"/></svg></div>
       <img class="whaleimg" src="assets/img/prop-whale.png" alt="宝螺小鲸鱼">
       <div class="cc"><div class="no">第二幕 · 上船</div><div class="t">淑仪号</div></div>
     </section>
@@ -796,7 +789,6 @@ html.shot .scene.active .bgimg{opacity:1}
       <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
       <div class="rope"></div>
       <div class="rescue"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
-      <div class="fig rescuer"><svg viewBox="0 0 60 120"><use href="#sym-man" fill="#0a1220"/></svg></div>
       <div class="cc"><div class="no">台风夜</div><div class="t">鱼起水，台风嘴</div></div>
     </section>
 
@@ -809,8 +801,6 @@ html.shot .scene.active .bgimg{opacity:1}
       <div class="moonreflect"></div>
       <div class="boat boat2"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
       <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
-      <div class="fig fig-singer"><svg viewBox="0 0 64 120"><use href="#sym-old" fill="#101c28"/></svg></div>
-      <div class="fig fig-listener"><svg viewBox="0 0 60 120"><use href="#sym-girl" fill="#0c1522"/></svg></div>
       <div class="lantern"></div>
       <div class="note n1">♪</div><div class="note n2">♫</div><div class="note n3">♪</div>
       <div class="cc"><div class="no">疍家挽歌</div><div class="t">叹家姐</div></div>
@@ -823,8 +813,6 @@ html.shot .scene.active .bgimg{opacity:1}
       <div class="building"><i class="win"></i><i class="win"></i><i class="win"></i><div class="redcross"></div></div>
       <div class="hosp-slogan">防 治 麻 风 · 人 人 有 责</div>
       <div class="limeline"></div>
-      <div class="fig fig-nurseA"><svg viewBox="0 0 60 120"><use href="#sym-woman" fill="#2c3844"/><path d="M30 28 Q17 40 19 76 L15 112 L25 112 L28 78 L32 78 L35 112 L45 112 L41 76 Q43 40 30 28 Z"/></svg></div>
-      <div class="fig fig-nurseB"><svg viewBox="0 0 60 120"><use href="#sym-woman" fill="#2c3844"/><path d="M30 28 Q17 40 19 76 L15 112 L25 112 L28 78 L32 78 L35 112 L45 112 L41 76 Q43 40 30 28 Z"/></svg></div>
       <div class="parcel"><svg viewBox="0 0 40 30" width="100%"><rect x="2" y="4" width="36" height="24" rx="4" fill="#8a7a5a"/><path d="M2 12 L38 12" stroke="#6a5c42" stroke-width="2"/></svg></div>
       <div class="pot"><svg viewBox="0 0 60 50" width="100%"><ellipse cx="30" cy="42" rx="26" ry="7" fill="#22303c"/><path d="M6 40 Q6 14 30 14 Q54 14 54 40 Z" fill="#31424f"/><rect x="24" y="6" width="12" height="9" rx="3" fill="#22303c"/></svg></div>
       <div class="steam"></div>
@@ -839,8 +827,6 @@ html.shot .scene.active .bgimg{opacity:1}
       <div class="lanterns"><i></i><i></i><i></i><i></i><i></i></div>
       <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
       <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/><path class="flagred" d="M45 3 L70 9 L45 15 Z"/><rect x="88" y="18" width="46" height="14" rx="2" fill="#7e2c22"/><text class="rname" x="94" y="29">花 船</text></svg></div>
-      <div class="fig fig-bride"><svg viewBox="0 0 60 120"><use href="#sym-woman" fill="#1c1016"/></svg></div>
-      <div class="fig fig-groom"><svg viewBox="0 0 60 120"><use href="#sym-man" fill="#101820"/></svg></div>
       <i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i>
       <div class="cc"><div class="no">水上婚礼</div><div class="t">再捞我一次</div></div>
     </section>
@@ -852,8 +838,6 @@ html.shot .scene.active .bgimg{opacity:1}
       <div class="posterwall"><i></i><i></i><i></i></div>
       <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
       <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
-      <div class="fig fig-sendoff"><svg viewBox="0 0 60 120"><use href="#sym-woman" fill="#0e1826"/></svg></div>
-      <div class="fig fig-sendoff2"><svg viewBox="0 0 60 120"><use href="#sym-man" fill="#0d1420"/></svg></div>
       <i class="blinklamp onboat"></i><i class="blinklamp onshore"></i>
       <i class="gunflash g1"></i><i class="gunflash g2"></i>
       <i class="crystar"></i>
@@ -891,7 +875,6 @@ html.shot .scene.active .bgimg{opacity:1}
     <!-- 1997 回归夜 -->
     <section class="scene" id="sc-1997">
       <div class="bgimg"></div>
-      <div class="fig fig-exam"><svg viewBox="0 0 60 120"><use href="#sym-man" fill="#0d1420"/></svg></div>
       <div class="cc"><div class="no">1997 · 回归夜</div><div class="t">看完直播的那一夜</div></div>
     </section>
 
@@ -911,8 +894,6 @@ html.shot .scene.active .bgimg{opacity:1}
       <div class="birds"></div>
       <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
       <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
-      <div class="fig fig-gran"><svg viewBox="0 0 64 120" class="rim"><use href="#sym-old" fill="#0e1a26"/></svg></div>
-      <div class="fig fig-wuyue"><svg viewBox="0 0 60 120"><use href="#sym-girl" fill="#0c1522"/></svg></div>
       <img class="wheelimg" src="assets/img/prop-wheel.png" alt="舵轮">
       <img class="whaleimg" src="assets/img/prop-whale.png" alt="宝螺小鲸鱼">
       <div class="cc"><div class="no">第四幕 · 台风眼</div><div class="t">顺风顺水</div></div>
@@ -925,8 +906,6 @@ html.shot .scene.active .bgimg{opacity:1}
       <div class="sky"></div><div class="stars"></div><div class="moon"></div><div class="moonpath"></div>
       <div class="horizon-sea"><div class="wave w1"></div><div class="wave w2"></div></div>
       <div class="boat"><svg viewBox="0 0 240 110"><use href="#sym-boat"/></svg></div>
-      <div class="fig fig-oldtwo"><svg viewBox="0 0 64 120"><use href="#sym-old" fill="#101c28"/></svg></div>
-      <div class="fig fig-oldtwo2"><svg viewBox="0 0 64 120"><use href="#sym-old" fill="#121e2c"/></svg></div>
       <div class="phoneglow"></div><img class="phoneimg" src="assets/img/prop-phone.png" alt="手机">
       <div class="endcard"><h2>剧 终</h2><p>献给每一位撑起一个家的家姐</p></div>
       <div class="cc"><div class="no">尾声 · 老伴</div><div class="t">循着月影就归家</div></div>

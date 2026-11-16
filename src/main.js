@@ -283,38 +283,38 @@ document.addEventListener('keydown', e => {
 // 之后换幕只调整各条音轨的目标音量，由渐变器平滑逼近——不再新建 Audio 元素，
 // 规避浏览器自动播放限制导致的“只有第一幕有声”。
 const AU = 'assets/audio/';
-const LOOPS = ['sea', 'sing_a', 'sing_b', 'sing_c', 'sing_d', 'siren', 'thunder', 'wedding', 'tvmur', 'phonering'];
+const LOOPS = ['sea', 'sing_a', 'siren', 'thunder', 'wedding', 'tvmur', 'phonering'];
 // 每幕：v={音轨:目标音量}；fx=[秒, 音轨, 音量, 持续秒(循环型音效可省=一次性)]
 const SCENE_AUDIO = {
   'sc-title':    { v: { sea: .5,  sing_a: .45 } },
   'ep1':         { v: { sea: .35, sing_a: .3 } },
-  'sc-paris':    { v: { sea: .12, sing_d: .35 }, fx: [[1.2, 'phonering', .5, 6.0]] },
-  'sc-raid':     { v: { sea: .15, sing_d: .25, siren: .26 } },
+  'sc-paris':    { v: { sea: .12, sing_a: .35 }, fx: [[1.2, 'phonering', .5, 6.0]] },
+  'sc-raid':     { v: { sea: .15, sing_a: .25, siren: .26 } },
   'sc-stele':    { v: { sea: .3,  sing_a: .38 }, fx: [[5.2, 'shutter', .5]] },
-  'ep2':         { v: { sea: .3,  sing_d: .3 } },
-  'sc-sister':   { v: { sea: .18, sing_d: .5 } },
+  'ep2':         { v: { sea: .3,  sing_a: .3 } },
+  'sc-sister':   { v: { sea: .18, sing_a: .5 } },
   'sc-boat':     { v: { sea: .5,  sing_a: .4 } },
-  'sc-typhoon':  { v: { sea: .3,  sing_d: .28, thunder: .55 } },
-  'sc-song':     { v: { sea: .28, sing_b: .85 } },
+  'sc-typhoon':  { v: { sea: .3,  sing_a: .28, thunder: .55 } },
+  'sc-song':     { v: { sea: .28, sing_a: .6 } },
   'ep3':         { v: { sea: .25, sing_a: .3 } },
   'sc-hospital': { v: { sea: .18, sing_a: .38 } },
   'ep4':         { v: { sea: .3,  sing_a: .3 } },
   'sc-wedding':  { v: { sea: .32, sing_a: .18, wedding: .45 } },
-  'ep5':         { v: { sea: .3,  sing_d: .35 } },
-  'sc-farewell': { v: { sea: .28, sing_d: .5 }, fx: [[13.2, 'baby', .4]] },
+  'ep5':         { v: { sea: .3,  sing_a: .35 } },
+  'sc-farewell': { v: { sea: .28, sing_a: .5 }, fx: [[13.2, 'baby', .4]] },
   'ep6':         { v: { sea: .25, sing_a: .35 } },
   'sc-1977':     { v: { sea: .18, sing_a: .42 } },
   'ep7':         { v: { sea: .3,  sing_a: .3 } },
   'sc-repair':   { v: { sea: .35, sing_a: .4 } },
-  'ep8':         { v: { sea: .3,  sing_b: .35 } },
-  'sc-reunion':  { v: { sea: .35, sing_b: .45 } },
-  'ep9':         { v: { sea: .25, sing_d: .3 } },
-  'sc-1993':     { v: { sea: .2,  sing_d: .35 } },
-  'sc-1997':     { v: { sea: .15, sing_d: .28, tvmur: .5 } },
+  'ep8':         { v: { sea: .3,  sing_a: .35 } },
+  'sc-reunion':  { v: { sea: .35, sing_a: .45 } },
+  'ep9':         { v: { sea: .25, sing_a: .3 } },
+  'sc-1993':     { v: { sea: .2,  sing_a: .35 } },
+  'sc-1997':     { v: { sea: .15, sing_a: .28, tvmur: .5 } },
   'sc-1998':     { v: { sea: .25, sing_a: .4, tvmur: .3 } },
-  'ep10':        { v: { sea: .35, sing_c: .4 } },
-  'sc-eye':      { v: { sea: .32, sing_c: .7, thunder: .3 } },
-  'sc-finale':   { v: { sea: .38, sing_b: .75 }, fx: [[0.6, 'phonering', .35, 4.0]] },
+  'ep10':        { v: { sea: .35, sing_a: .35 } },
+  'sc-eye':      { v: { sea: .32, sing_a: .55, thunder: .3 } },
+  'sc-finale':   { v: { sea: .38, sing_a: .75 }, fx: [[0.6, 'phonering', .35, 4.0]] },
 };
 let muted = false, audioOn = false;
 const loops = {};      // name -> {el, cur, target}
