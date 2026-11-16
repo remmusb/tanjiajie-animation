@@ -122,7 +122,7 @@ button{cursor:pointer;font-family:inherit}
 #sc-song .boatpic{width:52%;left:24%;bottom:11%}
 #sc-wedding .boatpic{width:48%;left:26%;bottom:13%}
 #sc-eye .boatpic{width:44%;left:28%;bottom:19%;
-  filter:brightness(.62) saturate(.55) hue-rotate(155deg) drop-shadow(0 8px 16px rgba(0,0,0,.6))}
+  filter:brightness(.68) saturate(.95) drop-shadow(0 8px 16px rgba(0,0,0,.6))}
 #sc-finale .boatpic{width:42%;left:29%;bottom:19%;filter:brightness(.6) sepia(.2)}
 /* ===== 对白字幕：楷体浮现于画面 ===== */
 #dialogue{position:absolute;left:50%;top:24%;transform:translate(-50%,0);z-index:30;
@@ -530,6 +530,24 @@ button{cursor:pointer;font-family:inherit}
 .scene.active .epno{animation:fadeUp 2.4s .3s ease both}
 .scene.active .epname{animation:fadeUp 2.8s .9s ease both}
 
+/* ===== 人物卡 ===== */
+.castcard{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4%;
+  background:radial-gradient(ellipse at 50% 40%,oklch(0.2 0.045 228),oklch(0.11 0.025 235) 78%)}
+.castcard::after{display:none}
+.casttitle{font-family:"Kaiti SC","STKaiti","KaiTi",serif;font-size:clamp(12px,1.5vw,18px);
+  letter-spacing:.6em;padding-left:.6em;color:var(--amber);opacity:0}
+.castlist{list-style:none;display:flex;flex-direction:column;gap:1.6vh;opacity:0}
+.castlist li{display:flex;align-items:baseline;font-size:clamp(11px,1.35vw,16px);
+  color:var(--paper-dim);letter-spacing:.1em;white-space:nowrap}
+.castlist b{font-family:"Kaiti SC","STKaiti","KaiTi",serif;font-weight:400;color:var(--paper);
+  font-size:1.18em;letter-spacing:.22em;min-width:6.4em;text-align:right;margin-right:1em;position:relative}
+.castlist b::after{content:'';position:absolute;right:-.6em;top:58%;width:.4em;height:1px;background:var(--amber);opacity:.7}
+.scene.active .casttitle{animation:fadeUp 2.2s .2s ease both}
+.scene.active .castlist{animation:fadeUp 2.8s .8s ease both}
+/* 对白说话人小签 */
+#dialogue .who{display:block;font-size:.6em;letter-spacing:.34em;padding-left:.34em;
+  color:var(--amber);margin-bottom:.6em;font-weight:400;text-shadow:0 1px 10px rgba(0,0,0,.95),0 0 3px rgba(0,0,0,.9)}
+
 /* ===== 写实道具贴图（与照片背景同风格） ===== */
 .propimg,.whaleimg,.wheelimg,.phoneimg{position:absolute;z-index:3;pointer-events:none}
 .propimg{filter:drop-shadow(0 14px 30px rgba(0,0,0,.6));opacity:0}
@@ -566,7 +584,7 @@ button{cursor:pointer;font-family:inherit}
 /* 自检模式：直接呈现动画终态（仅 ?auto=1 截图用） */
 html.shot *{animation:none!important;transition:none!important}
 html.shot .cc,html.shot .epno,html.shot .epname,html.shot .propimg,html.shot .photo-frame,
-html.shot .endcard,html.shot .bigtitle h1,html.shot .bigtitle p{opacity:1!important}
+html.shot .endcard,html.shot .bigtitle h1,html.shot .bigtitle p,html.shot .casttitle,html.shot .castlist{opacity:1!important}
 html.shot .photo-frame{transform:translate(-50%,-50%) rotate(-2deg)}
 html.shot .whaleimg{opacity:1}
 html.shot .scene.active .bgimg{opacity:1}
