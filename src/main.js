@@ -304,41 +304,41 @@ document.addEventListener('keydown', e => {
 // 之后换幕只调整各条音轨的目标音量，由渐变器平滑逼近——不再新建 Audio 元素，
 // 规避浏览器自动播放限制导致的“只有第一幕有声”。
 const AU = 'assets/audio/';
-const LOOPS = ['sea', 'sing_a', 'piano', 'radio60', 'radio80', 'thunder', 'tvmur', 'phonering'];
-// 每幕：v={音轨:目标音量}；fx=[秒, 音轨, 音量, 持续秒(循环型音效可省=一次性)]
-// 咸水歌(sing_a)：片头/上船/婚礼哭嫁/挽歌/台风眼/尾声主打
-// 时代音：radio60=五六十年代广播进行曲；radio80=八九十年代电台流行；tvmur=1997电视播报
+const LOOPS = ['sea', 'rain', 'm_oldA', 'm_oldB', 'm_newA', 'm_newB'];
+// 音乐：m_old*=《一齐学唱北海咸水歌》2:16-6:10 选段；m_new*=岭南咸水歌(少儿舞台版)选段
+// 新规：新音频在「疍家挽歌」(sc-song) 首次出现；效果音只留海浪(sea)与雨声(rain)
+// 每幕：v={音轨:目标音量}；换幕由全局渐变器做交叉淡化
 const SCENE_AUDIO = {
-  'sc-title':    { v: { sea: .5,  sing_a: .5 } },
-  'sc-cast':     { v: { sea: .4,  sing_a: .32 } },
-  'ep1':         { v: { sea: .35, sing_a: .3 } },
-  'sc-paris':    { v: { sea: .12, piano: .3 }, fx: [[1.2, 'phonering', .5, 6.0]] },
-  'sc-raid':     { v: { sea: .15, piano: .22 }, fx: [[1.0, 'siren2', .8]] },
-  'sc-stele':    { v: { sea: .3,  piano: .3 }, fx: [[5.2, 'shutter', .5]] },
-  'ep2':         { v: { sea: .3,  piano: .2 } },
-  'sc-sister':   { v: { sea: .18, piano: .3 } },
-  'sc-boat':     { v: { sea: .5,  sing_a: .4 } },
-  'sc-typhoon':  { v: { sea: .3,  thunder: .55, piano: .15 } },
-  'sc-song':     { v: { sea: .28, sing_a: .85 } },
-  'ep3':         { v: { sea: .25, radio60: .15 } },
-  'sc-hospital': { v: { sea: .18, radio60: .3 } },
-  'ep4':         { v: { sea: .3,  sing_a: .2 } },
-  'sc-wedding':  { v: { sea: .32, sing_a: .5 } },
-  'ep5':         { v: { sea: .3,  radio60: .15 } },
-  'sc-farewell': { v: { sea: .28, radio60: .35 }, fx: [[13.2, 'baby', .4]] },
-  'ep6':         { v: { sea: .25, piano: .22 } },
-  'sc-1977':     { v: { sea: .18, piano: .4 } },
-  'ep7':         { v: { sea: .3,  radio80: .15 } },
-  'sc-repair':   { v: { sea: .35, radio80: .28 } },
-  'ep8':         { v: { sea: .3,  radio80: .15 } },
-  'sc-reunion':  { v: { sea: .35, radio80: .28 } },
-  'ep9':         { v: { sea: .25, radio80: .12 } },
-  'sc-1993':     { v: { sea: .2,  radio80: .22 } },
-  'sc-1997':     { v: { sea: .15, tvmur: .5 } },
-  'sc-1998':     { v: { sea: .25, tvmur: .22, piano: .15 } },
-  'ep10':        { v: { sea: .35, sing_a: .35 } },
-  'sc-eye':      { v: { sea: .32, sing_a: .7, thunder: .3 } },
-  'sc-finale':   { v: { sea: .38, sing_a: .75 }, fx: [[0.6, 'phonering', .35, 4.0]] },
+  'sc-title':    { v: { sea: .5,  m_oldA: .5 } },
+  'sc-cast':     { v: { sea: .4,  m_oldA: .38 } },
+  'ep1':         { v: { sea: .35, m_oldA: .3 } },
+  'sc-paris':    { v: { sea: .18, m_oldA: .25 } },
+  'sc-raid':     { v: { sea: .25, m_oldA: .15 } },
+  'sc-stele':    { v: { sea: .3,  m_oldA: .35 } },
+  'ep2':         { v: { sea: .3,  m_oldB: .25 } },
+  'sc-sister':   { v: { sea: .2,  m_oldB: .38 } },
+  'sc-boat':     { v: { sea: .5,  m_oldB: .42 } },
+  'sc-typhoon':  { v: { sea: .3,  rain: .55, m_oldB: .12 } },
+  'sc-song':     { v: { sea: .28, m_newA: .85 } },
+  'ep3':         { v: { sea: .25, m_newA: .3 } },
+  'sc-hospital': { v: { sea: .18, m_oldA: .3 } },
+  'ep4':         { v: { sea: .3,  m_newB: .3 } },
+  'sc-wedding':  { v: { sea: .32, m_newB: .55 } },
+  'ep5':         { v: { sea: .3,  m_oldB: .25 } },
+  'sc-farewell': { v: { sea: .3,  m_oldB: .42 } },
+  'ep6':         { v: { sea: .25, m_oldA: .25 } },
+  'sc-1977':     { v: { sea: .18, m_oldA: .38 } },
+  'ep7':         { v: { sea: .3,  m_oldA: .28 } },
+  'sc-repair':   { v: { sea: .35, m_oldA: .35 } },
+  'ep8':         { v: { sea: .3,  m_newB: .3 } },
+  'sc-reunion':  { v: { sea: .35, m_newB: .48 } },
+  'ep9':         { v: { sea: .25, m_oldB: .22 } },
+  'sc-1993':     { v: { sea: .2,  m_oldB: .3 } },
+  'sc-1997':     { v: { sea: .2,  rain: .18, m_oldB: .22 } },
+  'sc-1998':     { v: { sea: .25, m_newB: .45 } },
+  'ep10':        { v: { sea: .35, m_newA: .4 } },
+  'sc-eye':      { v: { sea: .32, rain: .25, m_newA: .65 } },
+  'sc-finale':   { v: { sea: .38, m_newA: .7 } },
 };
 let muted = false, audioOn = false;
 const loops = {};      // name -> {el, cur, target}
